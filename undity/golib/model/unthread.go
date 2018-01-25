@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"html"
 	"fmt" // DEBUG
 )
 
@@ -57,8 +58,7 @@ var RegsName = regexp.MustCompile(`<b>([\s\t]*)</b>`)
 var RegsHttp = regexp.MustCompile(`(s?h?ttps?)://((?:[\-\.a-zA-Z0-9]+\/?)(?:[-_.!~*"()a-zA-Z0-9;/?:\@&=+\$,%#\|]+))`)
 var RegsBe = regexp.MustCompile(` BE:(\d+)\-([^\s\(]+\(\d+\))`)
 var RegsIdsplit = regexp.MustCompile(`^(.*) ID:([\w!\+/]+)(.*)`)
-//var RegsRes = regexp.MustCompile(`(&gt;(?:&gt;)?)(\d+)([-,\d]*)`)
-var RegsRes = regexp.MustCompile(`(>(?:>)?)(\d+)([-,\d]*)`)
+var RegsRes = regexp.MustCompile(`(&gt;(?:&gt;)?)(\d+)([-,\d]*)`)
 var RegsSssp = regexp.MustCompile(`sssp(\://img\.2ch\.net/([-_\w\./?&]+))`)
 
 var RegsC2ch = regexp.MustCompile(`^c\.2ch\.net/test/\-/(\w+)(?:/(\d{9,10}))?(/[-,l\d]+)?`)
@@ -381,6 +381,8 @@ func (th *Thread) analyzeData() {
 
 		///////////////////////
 		// 整形処理
+		// HTMLエスケープ
+		messageStr = html.EscapeString(messageStr)
 		// URL処理
 		messageStr = RegsHttp.ReplaceAllStringFunc(messageStr, url_callback)
 		// 画像リンク処理

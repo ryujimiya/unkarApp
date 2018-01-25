@@ -1,0 +1,39 @@
+@charset "utf-8";
+body { font: 100% 'メイリオ',Meiryo,'ヒラギノ角ゴ Pro W3','ＭＳ Ｐゴシック',Arial,sans-serif; }
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td { margin: 0; padding: 0; }
+address, caption, cite, code, dfn, em, strong, th, var { font-style: normal; }
+img, a img { border-style: none; }
+
+/************************************************/
+body { color: #111111; font-size: 14px; line-height: 125%; }
+h1 { font-weight: bold; border-style: none; }
+h2 { font-size: 16px; font-weight: normal; }
+#logo-area { margin: 40px 0px; border-style: none; }
+#logo a:link, #logo a:visited, #logo a:active, #logo a:hover { text-decoration: none; border-style: none; }
+#contents { width: 100%; text-align: center; padding: 20px 0 0 0; }
+#tagline-area { margin: 12px 0; }
+#search-area { margin: 0 0 24px 0; }
+#searchform { height: 32px; }
+input.searchBox { font-size: 20px; width: 300px; height: 24px; }
+input.searchBtn { font-size: 20px; width: 75px; }
+#sub { text-align: left; margin: 48px auto; width: 960px; }
+.titleline { padding: 5px 3px; margin: 3px 0; border-style: solid; border-width: 0 0 1px 0; border-color: #CCC; }
+#italist { float: left; width: 49%; }
+.cate-area { float: left; width: 28%; margin: 3px 3px 3px 20px; }
+.italist-hide { display: none; }
+#surelist { float: right; width: 49%; }
+#surelist dd { margin: 0 0 0 16px; font-size: 12px; }
+#surelist ul { margin: 0 0 0 20px; font-size: 12px; }
+#header { position: fixed; left:0px; top:0px; width: 100%; height: 20px; padding: 0 5px 6px 5px; background-color: #2B2B2B; color: #ADADAD; font-size: 12px; font-weight: 700; }
+#header a:link, #header a:visited, #header a:active { color: #ADADAD; text-decoration: none; }
+#header a:hover { color: #F3F3F2; text-decoration: none; }
+#header li { list-style-type: none; }
+#header li a { vertical-align: text-bottom; }
+#header #uNav { overflow: hidden; }
+#header #uNav li { float: right; padding: 3px; margin: 0 0px 4px 4px; }
+#header #gNav { text-align: right; }
+#header #gNav li { float: left; padding: 3px; margin: 0 4px 4px 0; }
+#footer { clear: both; text-align: center; }
+#footer li { list-style-type: none; float: left; padding: 0 5px; }
+.list { text-align: left; margin: 0 auto; }
+#copyright { clear: both; }

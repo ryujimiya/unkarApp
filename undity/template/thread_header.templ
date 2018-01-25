@@ -1,0 +1,21 @@
+<header>
+<div id="header">
+<nav><ol id="gNav">
+<li><a href="/" itemprop="url"><span itemprop="title">unkar</span></a></li>
+<li><a href="{{.HostUrl}}" itemprop="url"><span itemprop="title">板一覧</span></a></li>
+{{if ne .Boardname ""}}<li><a href="{{print .HostUrl "/" .Board}}" itemprop="url"><span itemprop="title">{{html .Boardname}}</span></a></li>
+{{end}}</ol></nav>
+<ul id="uNav">
+<li><a href="/help/">削除依頼</a></li>
+<li><form action="/search" method="get">
+<input name="q" type="text" size="16" value="" class="search-text">
+<input type="submit" value="検索" class="search-submit">
+</form></li>
+<li><div class="fb-like" data-layout="button" data-action="like" data-show-faces="false"></div></li>
+<li><div class="g-plusone" data-size="medium" data-annotation="none"></div></li>
+<li>　</li>
+<li>　</li>
+<li><a href="http://{{.Server}}/test/read.cgi/{{.Board}}/{{.Thread}}" target="_blank" rel="nofollow">元スレ</a></li>
+</ul>
+</div>
+</header>

@@ -1,0 +1,53 @@
+@charset "utf-8";
+body { font: 100% 'メイリオ',Meiryo,'ヒラギノ角ゴ Pro W3','ＭＳ Ｐゴシック',Arial,sans-serif; }
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td { margin: 0; padding: 0; }
+address, caption, cite, code, dfn, em, strong, th, var { font-style: normal; }
+img, a img { border-style: none; }
+
+/************************************************/
+body { color: #111111; font-size: 14px; line-height: 125%; }
+h1 { font-weight: bold; border-style: none; }
+h2 { font-size: 14px; font-weight: normal; }
+em { font-weight: bold; }
+#logo-area { padding: 14px 24px 20px 16px; border-style: none; float: left; }
+#logo a:link, #logo a:visited, #logo a:active, #logo a:hover { text-decoration: none; border-style: none; color: #00552e; }
+#search-area { padding: 32px 0; }
+#contents { width: 100%; clear: both; margin-bottom: 30px; padding: 25px 0 0 0; }
+#title-box { background-color: #F7F7F7; padding: 3px 0 5px 16px; border-style: solid; border-width: 2px 0 0 0; border-color: #00552e; clear: left; }
+#searchform { height: 32px; }
+input.searchBox { font-size: 20px; width: 300px; height: 24px; }
+input.searchBtn { font-size: 20px; width: 75px; }
+#search-body { width: 100%; clear: both; overflow: hidden; position: relative; }
+#search-gutter { width: 150px; float: left; padding: 10px 0 0 3px; }
+#search-main { margin-left: 180px; margin-right: 250px; min-height: 600px; padding-top: 20px; }
+#page-nav { text-align: center; }
+#page-nav li { list-style-type: none; float: left; padding: 0 5px; }
+#search-footer { clear: left; padding: 20px 0; }
+#search-side { position: absolute; right: 10px; top: 10px; }
+#search-side-body { margin: 0 0 20px; padding: 0; width: 220px; }
+#header { position: fixed; left:0px; top:0px; z-index: 1; width: 100%; height: 20px; padding: 0 5px 6px 5px; background-color: #2B2B2B; color: #ADADAD; font-size: 12px; font-weight: 700; }
+#header a:link, #header a:visited, #header a:active { color: #ADADAD; text-decoration: none; }
+#header a:hover { color: #F3F3F2; text-decoration: none; }
+#header a.fb-like:link, #header a.fb-like:visited, #header a.fb-like:active { display:inline-block; padding:0 2px 0 20px; border:solid 1px #777; border-radius:4px; -moz-border-radius:4px; height:20px; line-height:20px; background:url(//file.unkar.org/img/f_logo.png) no-repeat 2px center #CCC; text-decoration:none; color:#444; font-weight:400; *display:inline; }
+#header a.fb-like:hover { color: #111; }
+#header li { list-style-type: none; }
+#header li a { vertical-align: text-bottom; }
+#header #uNav { overflow: hidden; }
+#header #uNav li { float: right; padding: 3px; margin: 0 0 4px 4px; }
+#header #gNav { text-align: right; }
+#header #gNav li { float: left; padding: 3px; margin: 0 4px 4px 0; }
+#footer { clear: both; text-align: center; }
+#footer li { list-style-type: none; float: left; padding: 0 5px; }
+.list { text-align: left; margin: 0 auto; }
+#copyright { clear: both; }
+.str { font-weight: bold; }
+.gutter-area { padding: 0 0 16px 3px; }
+.thread-area { margin-bottom: 20px; }
+.thread-title { font-size: 16px; }
+.thread-info { padding-top: 4px; font-size: 12px; }
+.thread-info a:link, .thread-info a:visited, .thread-info a:active { color: #007bbb; text-decoration: none; }
+.thread-info a:hover { text-decoration: underline; }
+.thread-info-description { padding-top: 4px; }
+.path { color: #007B43; }
+.page-now { font-weight: bold; }
+.resnum { color: #999; }

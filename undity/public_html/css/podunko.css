@@ -1,0 +1,36 @@
+* {font-family:"ÇlÇr ÇoÉSÉVÉbÉN","ÇlÇr ÉSÉVÉbÉN";}
+body {
+	color:black;background-color:#efefef;
+	font-size:14px;line-height:115%;
+	padding:0; margin:0;
+}
+h1 {color:red;font-size:16px;font-weight:400;}
+tbody {font-size:14px;line-height:115%;}
+dd {margin: 2px 0px 10px 0px;}
+ul, ol, li {
+	margin: 0;
+	padding: 0;
+}
+#nich {padding-left:1px;}
+.title {font-size:16px;color:red;}
+.nich {color:green;}
+.res {color:#B02B2C;}
+.spd {color:#006E2E;}
+.search {background-color:#FFFF00;}
+.popup {
+	font-size: 14px;line-height:105%;
+	padding: 3px;filter: alpha(opacity=90);
+	-moz-opacity:0.9;opacity:0.9;
+	/* white-space:pre; */
+}
+.popup dl {margin:0px;}
+.popup dt {margin:0px;}
+.popup dd {margin:0px 0px 7px 0px;}
+.saba {display:none;margin-left:5px;}
+.resdate {font-size: 12px;line-height:105%;color:#777;}
+.mini {font-size: 12px;line-height:105%;}
+.line-color {background-color:#F5F5F5;}
+.rireki {margin-left: 16px;}
+a:link.tan,a:visited.tan,a:active.tan,a:hover.tan {color:#333333;text-decoration: underline;}
+a:link.makka,a:visited.makka,a:active.makka,a:hover.makka {color:#FF0000;text-decoration: underline;}
+a:link.ninki,a:visited.ninki,a:active.ninki,a:hover.ninki {color:#AF00CF;text-decoration: underline;}

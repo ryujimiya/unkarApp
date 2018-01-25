@@ -1,0 +1,30 @@
+* {font-family:"ÇlÇr ÇoÉSÉVÉbÉN","ÇlÇr ÉSÉVÉbÉN";}
+body {
+	color:black;background-color:#efefef;
+	font-size:12px;line-height:115%;
+}
+h1 {color:red;font-size:13px;font-weight:400;}
+tbody {font-size:12px;line-height:115%;}
+dd {margin: 0px 0px 12px 18px;}
+#nich {width:100%;height:95%;overflow:scroll;}
+.title {font-size:13px;color:red;}
+.nich {color:green;}
+.res {color:#B02B2C;}
+.spd {color:#006E2E;}
+.popup {
+	font-size: 10px;line-height:105%;
+	border-style: solid;border-color: #000000;border-width: 1px;
+	padding: 3px;filter: alpha(opacity=90);
+	-moz-opacity:0.9;opacity:0.9;white-space:pre;
+}
+.popup dl {margin:0px;}
+.popup dt {margin:0px;}
+.popup dd {margin:0px 0px 7px 10px;}
+.saba {display:none;margin-left:5px;}
+.line-color {background-color:#F5F5F5;}
+a:link,a:visited {color:blue;}
+a:active {color:red;}
+a:hover {color:#660099;}
+a:link.tan,a:visited.tan,a:active.tan,a:hover.tan {color:#333333;text-decoration: underline;}
+a:link.makka,a:visited.makka,a:active.makka,a:hover.makka {color:#FF0000;text-decoration: underline;}
+a:link.ninki,a:visited.ninki,a:active.ninki,a:hover.ninki {color:#AF00CF;text-decoration: underline;}

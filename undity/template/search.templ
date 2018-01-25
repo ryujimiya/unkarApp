@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="http://file.unkar.org/css/unkar-search.org.css">
+<link rel="shortcut icon" href="http://file.unkar.org/favicon.ico">
+<link rel="icon" href="http://file.unkar.org/favicon.ico">
+{{if .Canonical}}<link rel="canonical" href="{{.CanonicalQuery}}">
+{{end}}<meta property="og:title" content="{{html .Title}}">
+<meta property="og:description" content="{{html .Description}}">
+<meta property="og:url" content="{{.CanonicalQuery}}">
+<meta property="og:type" content="article">
+<meta property="og:image" content="http://file.unkar.org/img/podunko.png">
+<meta property="og:site_name" content="unkar">
+</head>
+<body id="unkar" class="topBody">
+<header>
+<div id="header">
+<nav><ul id="gNav">
+<li><a href="/">unkar</a></li>
+<li><a href="/r">板一覧</a></li>
+</ul></nav>
+<ul id="uNav">
+<li><a href="/help/">削除依頼</a></li>
+<li><a class="fb-like" href="http://www.facebook.com/plugins/like.php?href={{.CanonicalQuery}}" onclick="javascript:window.open(\'http://www.facebook.com/plugins/like.php?href={{.CanonicalQuery}}\',null,\'width=450,height=250\');return false;" target="_blank" rel="nofollow">いいね！</a></li>
+<li><div class="g-plusone" data-size="medium" data-annotation="none"></div></li>
+<li><a href="http://b.hatena.ne.jp/entry/{{.CanonicalQuery}}" class="hatena-bookmark-button" data-hatena-bookmark-layout="simple" target="_blank" rel="nofollow"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="はてな" width="20" height="20"></a></li>
+<li><a href="http://twitter.com/share" class="twitter-share-button" data-lang="ja" data-count="none" data-hashtags="2ch" target="_blank" rel="nofollow">つぶやく</a></li>
+</ul>
+<!-- / #header --></div>
+</header>
+
+<div id="contents">
+
+<div id="search-bar">
+<div id="logo-area">
+<h1 id="logo"><a href="/"><img src="http://file.unkar.org/img/unkar-logo-mini.png" alt="unkar" width="159" height="53" /></a></h1>
+</div>
+<div id="search-area">
+<form action="/search" method="get" id="searchform">
+<input name="q" type="text" class="searchBox" size="60" value="{{.Word}}" id="searchtext" />
+<input type="submit" value="検索" class="searchBtn" />
+<div id="search-option">
+{{.SelectBoard}}
+<select name="type" id="search-select-type">
+<option value="number">スレッドが立った時間順</option>
+<option value="score"{{if eq .Type "score"}} selected{{end}}>単語出現回数順</option>
+</select>
+<select name="order" id="search-select-order">
+<option value="desc">降順↓</option>
+<option value="asc"{{if eq .Order "asc"}} selected{{end}}>昇順↑</option>
+</select>
+<!-- / #search-option --></div>
+</form>
+<!-- / #search-area --></div>
+<!-- / #search-bar --></div>
+
+<section>
+<div id="title-box">
+<h2>{{if .Dataflag}}<span class="str">{{.Word}}</span>に一致する{{if ne .Boardname ""}}<span class="str">{{.Boardname}}</span>の{{end}}スレッド 約 <span class="str">{{.SearchMax}}</span> 件中
+ <span class="str">{{.Min}}</span> - <span class="str">{{.Max}}</span> 件目 (<span class="str">{{printf "%.2f" .Time}}</span> 秒)
+{{else if ne .Word ""}}<span class="str">{{.Word}}</span>に一致する{{if ne .Boardname ""}}<span class="str">{{.Boardname}}</span>の{{end}}スレッドは見つかりませんでした
+{{else}}検索文字列が空です
+{{end}}</h2>
+<!-- / #title-box --></div>
+</section>
+
+<div id="search-body">
+<div id="search-body-wrap">
+<section>
+<div id="search-gutter">
+{{.SearchGutter}}
+<!-- / #search-gutter --></div>
+</section>
+<div id="search-main">
+{{.SearchMain}}
+<div id="search-footer">
+</div>
+<!-- / #search-main --></div>
+<div id="search-side">
+<div id="search-side-body">
+<!-- / #search-side-body --></div>
+<!-- / #search-side --></div>
+<!-- / #search-body-wrap --></div>
+<!-- / #search-body --></div>
+
+<!-- / #contents --></div>
+
+<footer>
+<div id="footer">
+<div class="list">
+<nav><ul>
+<li><a href="/r">板一覧</a></li>
+<li><a href="/test/">ぷろじぇくとうんかー</a></li>
+</ul></nav>
+</div>
+<div id="copyright">Copyright &copy; 2008-{{.Year}} unkar.org, All Rights Reserved.</div>
+</div>
+</footer>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script>google.load("jquery", "1");</script>
+<script charset="utf-8" src="//file.unkar.org/js/unkar-search-1.0.1.min.js" async defer></script>
+<script src="//platform.twitter.com/widgets.js" id="twitter-wjs" async defer></script>
+<script charset="utf-8" src="//b.st-hatena.com/js/bookmark_button.js" async defer></script>
+<script src="//apis.google.com/js/plusone.js" async defer></script>
+</body>
+</html>

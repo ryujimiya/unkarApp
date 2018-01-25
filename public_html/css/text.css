@@ -1,0 +1,346 @@
+body {
+	font-family: "ÉÅÉCÉäÉI", "Meiryo", verdana, "ÉqÉâÉMÉmäpÉS Pro W3", "Hiragino Kaku Gothic Pro", Osaka, "ÇlÇr ÇoÉSÉVÉbÉN", "MS PGothic", Sans-Serif;
+}
+
+* html body {
+	/* for IF6 */
+	font-family: "ÇlÇr ÇoÉSÉVÉbÉN","MS PGothic",Sans-Serif;
+}
+
+body, div, dl, dt, dd,
+ul, ol, li,
+h1, h2, h3, h4, h5, h6,
+pre, form, fieldset,
+input, textarea,
+p, blockquote, th, td {
+	margin: 0;
+	padding: 0;
+}
+
+address, caption,
+cite, code, dfn, em,
+strong, th, var {
+	font-style: normal;
+}
+
+/************************************************/
+
+body {
+	background-color: #00552e;
+	color: #111111;
+	font-size: 14px;
+	line-height: 125%;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+caption, th {
+	text-align: left;
+}
+
+q:before, q:after {
+	content: '';
+}
+
+object, embed {
+	vertical-align: top;
+}
+
+hr, legend {
+	display: none;
+}
+
+h1 {
+	color: #000000;
+	font-size: 36px;
+	background-color: #EFEFEF;
+	padding: 5px;
+	border: solid 2px #aacf53;
+	line-height: 130%;
+}
+
+h2 {
+	color: #000000;
+	font-size: 20px;
+	margin: 7px 0px 3px 0px;
+	padding: 0px 0px 2px 5px;
+	border-style: solid;
+	border-width: 0px 0px 1px 0px;
+	border-color: #89c3eb;
+}
+
+h3 {
+	color: #000000;
+	font-size: 16px;
+}
+
+p {
+	padding: 4px 4px 4px 10px;
+}
+
+strong {
+	font-weight: bold;
+	color: #FF0000;
+}
+
+img, abbr, acronym, fieldset {
+	border: 0;
+}
+
+li {
+	list-style-type: none;
+}
+
+a {
+	text-decoration: none;
+	font-weight: bold;
+}
+
+a:link {
+	color: #0000FF;
+}
+
+a:visited {
+	color: #0000FF;
+}
+
+a:hover {
+	color: #0095d9;
+}
+
+a:active {
+}
+
+.imgR {
+	float: right;
+	margin: 0 0 10px 10px;
+}
+
+.imgL {
+	float: left;
+	margin: 0 10px 10px 0;
+}
+
+.btn {
+	text-align: center;
+}
+
+.externalIcon {
+	padding-left: 5px;
+	vertical-align: middle;
+}
+
+.h2box {
+	margin-left: 10px;
+	padding-bottom: 5px;
+}
+
+.h2box img {
+	border: solid 1px #0000FF;
+}
+
+.str {
+	font-weight: bold;
+}
+
+.mainbox {
+	padding: 4px;
+	background-color: #EFEFEF;
+	border: solid 2px #aacf53;
+}
+
+.mainbox table,
+.mainbox ol,
+.mainbox ul,
+.mainbox dl,
+.mainbox blockquote,
+.mainbox pre,
+.mainbox p {
+	margin-bottom: 1em;
+}
+
+.mainbox td {
+	padding: 4px;
+}
+
+input.searchBox {
+	height: 20px;
+	font-size: 16px;
+}
+
+input.searchBtn {
+	font-size: 16px;
+	width: 50px;
+}
+
+input.searchBox.search {
+	height: 30px;
+	font-size: 24px;
+}
+
+input.searchBtn.search {
+	font-size: 24px;
+	width: 100px;
+}
+
+span#navSkip {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+#page {
+	width: 860px;
+	margin: 4px auto;
+	text-align: left;
+}
+
+#contents {
+	float: left;
+	width: 860px;
+}
+
+#contents .pageTop {
+	clear: both;
+	text-align: right;
+}
+
+#contents ul {
+	padding-left: 25px;
+}
+
+#contents li {
+	list-style-type: disc;
+}
+
+#main {
+	float: left;
+	width: 540px;
+	padding: 4px;
+	background-color: #EFEFEF;
+	border: solid 2px #aacf53;
+}
+
+#main table,
+#main ol,
+#main ul,
+#main dl,
+#main blockquote,
+#main pre,
+#main p {
+	margin-bottom: 1em;
+}
+
+#main td {
+	padding: 4px;
+}
+
+#sub {
+	float: right;
+	width: 292px;
+	padding: 4px;
+	background-color: #EFEFEF;
+	border: solid 2px #aacf53;
+}
+
+#search {
+	padding-bottom: 16px;
+}
+
+#search li {
+	font-size: 18px;
+	font-weight: bold;
+	list-style-type: none;
+	float: left;
+	padding: 3px 10px;
+	margin: 2px;
+	border: solid 1px #aacf53;
+	background-color: #cee4ae;
+}
+#search li.now {
+	background-color: #e6b422;
+}
+
+#search thead {
+	background-color: #5654a2;
+	font-weight: bold;
+	color: #ffffff;
+	font-size: 16px;
+	height: 24px;
+}
+
+#search thead th {
+	text-align: center;
+}
+
+tr.even {
+	background-color: #f7fcfe;
+}
+tr.odd {}
+td.searchno {
+	color: #000000;
+	font-weight: bold;
+}
+
+#header {
+	margin: 0px 0px 4px 0px;
+}
+
+#header #utilityNav {
+	overflow: hidden;
+}
+
+* html #header #utilityNav {
+	height: 1%;
+}
+
+#header #utilityNav li {
+	float: right;
+	padding: 3px;
+	margin: 0px 0px 4px 4px;
+	border: solid 2px #aacf53;
+	background: #EFEFEF;
+}
+
+#header #gNav {
+	text-align: right;
+}
+
+#header #gNav li {
+	float: left;
+	padding: 3px;
+	margin: 0px 4px 4px 0px;
+	border: solid 2px #aacf53;
+	background: #EFEFEF;
+}
+
+#footer {
+
+}
+
+#footer ul {
+
+}
+
+#footer ul li {
+	float: left;
+	padding: 3px;
+	margin: 4px 4px 4px 0px;
+	border: solid 2px #aacf53;
+	background: #EFEFEF;
+}
+
+#footer ul li.firstChild,
+#footer ul li:first-child {
+}
+
+#footer .copyright {
+	clear: both;
+	padding: 1px;
+	background: #EFEFEF;
+	border: solid 2px #aacf53;
+	text-align: center;
+}

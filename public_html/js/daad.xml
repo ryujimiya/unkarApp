@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs title="daad"
+			 title_url="http://www.unkar.org/"
+			 description="２ちゃんねるビューアです。板やスレッドを閲覧することができます。"
+			 width="320"
+			 height="420"
+			 screenshot="http://file.unkar.org/2ch/img/daad.png"
+			 thumbnail="http://file.unkar.org/2ch/img/daad-thumb.png"
+			 author="tanaton"
+			 author_email="heiwaboke+igoogle@gmail.com"
+			 author_link="http://www.unkar.org/"
+			 author_location="Japan">
+<Require feature="opensocial-0.8" />
+<Require feature="views" />
+<Require feature="settitle" />
+<Require feature="setprefs" />
+</ModulePrefs>
+<UserPref name="reboot_url" default_value="server" datatype="hidden" />
+<Content type="html" view="profile,home"><![CDATA[
+<script type="text/javascript" src="http://file.unkar.org/js/daad_home.js"></script>
+<style type="text/css">
+<!--
+* {font-family:"ＭＳ Ｐゴシック","ＭＳ ゴシック";}
+body {
+	color:black;background-color:#efefef;
+	font-size:12px;line-height:115%;
+}
+h1 {color:red;font-size:13px;font-weight:400;}
+tbody {font-size:12px;line-height:115%;}
+dd {margin: 2px 0px 10px 0px;}
+ul, ol, li {
+	margin: 0;
+	padding: 0;
+}
+#nich {width:100%;height:95%;overflow:scroll;}
+.title {font-size:13px;color:red;}
+.nich {color:green;}
+.res {color:#B02B2C;}
+.spd {color:#006E2E;}
+.search {background-color:#FFFF00;}
+.popup {
+	font-size: 10px;line-height:105%;
+	border-style: solid;border-color: #000000;border-width: 1px;
+	padding: 3px;filter: alpha(opacity=90);
+	-moz-opacity:0.9;opacity:0.9;white-space:pre;
+}
+.popup dl {margin:0px;}
+.popup dt {margin:0px;}
+.popup dd {margin:0px 0px 7px 10px;}
+.line-color {background-color:#F5F5F5;}
+.saba {display:none;margin-left:5px;}
+.resdate {font-size: 11px;line-height:105%;color:#777;}
+.mini {font-size: 10px;line-height:105%;}
+.line-color {background-color:#F5F5F5;}
+.rireki {margin-left: 15px;}
+a:link,a:visited {color:blue;}
+a:active {color:red;}
+a:hover {color:#660099;}
+a:link.tan,a:visited.tan,a:active.tan,a:hover.tan {color:#333333;text-decoration: underline;}
+a:link.makka,a:visited.makka,a:active.makka,a:hover.makka {color:#FF0000;text-decoration: underline;}
+a:link.ninki,a:visited.ninki,a:active.ninki,a:hover.ninki {color:#AF00CF;text-decoration: underline;}
+-->
+</style>
+<div id="menu">
+<img src="http://file.unkar.org/img/unkar/arrow-left.gif" alt="戻る" width="16" height="16" id="back" />
+<img src="http://file.unkar.org/img/unkar/arrow-right.gif" alt="進む" width="16" height="16" id="forward" />
+<img src="http://file.unkar.org/img/unkar/refresh.gif" alt="更新" width="16" height="16" id="update" />
+<img src="http://file.unkar.org/img/unkar/home.gif" alt="HOME" width="16" height="16" id="home" />
+<img src="http://file.unkar.org/img/unkar/clipboard.gif" alt="履歴" width="16" height="16" id="history" />
+<span id="outer"></span>
+</div>
+<div id="nich"></div>
+]]></Content>
+<Content type="html" view="canvas"><![CDATA[
+<script type="text/javascript" src="http://file.unkar.org/js/daad_canvas.js"></script>
+<style type="text/css">
+<!--
+	* {font-family:"ＭＳ Ｐゴシック","ＭＳ ゴシック";}
+	body {
+		color:#000000;font-size:14px;
+		line-height:120%;margin:0;padding:0;
+	}
+	#menu {width:100%;height:auto;margin:0;padding:0;}
+	#server {
+		font-size:14px;float:left;width:15%;height:100%;
+		vertical-align:top;overflow:scroll;
+	}
+	#board {
+		float:left;width:85%;height:30%;overflow:scroll;
+	}
+	#board-tab {
+		float:left;line-height:13px;width:85%;
+		height:auto;white-space:nowrap;font-size:12px;
+	}
+	#board-menu {
+		float:left;width:85%;height:18px;
+		white-space:nowrap;font-size:12px;
+	}
+	#board-search {border: solid 1px #000000;}
+	#board table {
+		width:100%;font-size:14px;
+		overflow:hidden;white-space:nowrap;
+	}
+	.line-color {background-color:#F5F5F5;}
+	#board th {font-size:12px;background-color:#F0F0E8;}
+	#thread {
+		float:left;background-color:#EFEFEF;
+		font-size:16px;line-height:115%;
+		width:85%;height:60%;overflow:scroll;
+	}
+	#thread-tab {
+		float:left;line-height:13px;background-color:#EFEFEF;
+		font-size:12px;width:85%;height:auto;white-space:nowrap;
+	}
+	#thread-menu {
+		float:left;width:85%;height:18px;
+		white-space:nowrap;font-size:12px;
+	}
+	#thread-search {border: solid 1px #000000;}
+	#popup {white-space:pre;}
+	.nich {color:green;}
+	.res {color:#B02B2C;font-weight:700;}
+	.sin {color:#3F4C6B;}
+	.spd {color:#006E2E;font-weight:700;}
+	.title {font-size:18px;color:red;}
+	.navi {color:#3300FF;text-decoration:underline;}
+	.search {background-color:#FFFF00;}
+	h1 {
+		color:red;font-size:18px;font-weight:400;
+		margin:10px 0px 14px 3px;
+	}
+	h2 {
+		font-size:16px;font-weight:400;
+		margin:0;padding:0;
+	}
+	form, input {
+		display:inline;vertical-align:top;
+		margin:0;padding:0;
+	}
+	b {font-weight:700;}
+	dd {margin:0 0 20px 32px;}
+	dl {margin:0 0 0 5px;}
+	ul {list-style:none;margin:0;padding:0;}
+	li {
+		background-color:#EBE5C3;
+		float:left;width:auto;
+		margin:0px 2px 2px 2px;padding:2px;
+	}
+	li.now {background-color:#FFEEA8;}
+	#thread-tab li a,
+	#board-tab li a {color:#000000;text-decoration:none;}
+	li a:hover {background-color:#E0EFF9;}
+	a:link,a:visited {color:blue;}
+	a:link.makka,a:visited.makka,a:active.makka,a:hover.makka {color:red;text-decoration:underline;}
+	a:link.ninki,a:visited.ninki,a:active.ninki,a:hover.ninki {color:#AF00CF;text-decoration:underline;}
+	a:link.tan,a:visited.tan,a:active.tan,a:hover.tan {color:#333;text-decoration:underline;}
+	.popup dl,.popup dt,dt {margin:0;}
+-->
+</style>
+<div id="menu">
+<img src="http://file.unkar.org/img/unkar/info.gif" alt="メニュー" width="16" height="16" onclick="daad.menu.contextmenu();">　
+<img src="http://file.unkar.org/img/unkar/trash.gif" alt="タブを全て削除" width="16" height="16" onclick="daad.tab.delAll();">　
+<span id="outer"></span>
+</div>
+<div id="nich">
+<div id="server"></div>
+<div id="board-menu">
+<form onsubmit="daad.search.main(daad.id.board);return false;">
+<input type="text" id="board-search" size="40" onkeyup="daad.search.main(daad.id.board);">　
+</form>
+<img src="http://file.unkar.org/img/unkar/zoom-in.gif" alt="↓" width="16" height="16" onclick="daad.search.next(daad.id.board);">　
+<img src="http://file.unkar.org/img/unkar/zoom-out.gif" alt="↑" width="16" height="16" onclick="daad.search.back(daad.id.board);">　
+<img src="http://file.unkar.org/img/unkar/refresh.gif" alt="スレッド一覧更新" width="16" height="16" onclick="$daad.renew(daad.id.board);">　
+<img src="http://file.unkar.org/img/unkar/edit.gif" alt="スレ立て" width="16" height="16" onclick="$daad.p2Kakiko(daad.id.board);">　
+</div>
+<div id="board-tab"></div>
+<div id="board"></div>
+<div id="thread-menu">
+<form onsubmit="daad.search.main(daad.id.thread);return false;">
+<input type="text" id="thread-search" size="40" onkeyup="daad.search.main(daad.id.thread);">　
+</form>
+<img src="http://file.unkar.org/img/unkar/zoom-in.gif" alt="↓" width="16" height="16" onclick="daad.search.next(daad.id.thread);">　
+<img src="http://file.unkar.org/img/unkar/zoom-out.gif" alt="↑" width="16" height="16" onclick="daad.search.back(daad.id.thread);">　
+<img src="http://file.unkar.org/img/unkar/refresh.gif" alt="スレッド一覧更新" width="16" height="16" onclick="$daad.renew(daad.id.thread);">　
+<img src="http://file.unkar.org/img/unkar/edit.gif" alt="書き込み" width="16" height="16" onclick="$daad.p2Kakiko(daad.id.thread);">　
+</div>
+<div id="thread-tab"></div>
+<div id="thread"></div>
+</div>
+]]></Content>
+</Module>

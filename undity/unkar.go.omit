@@ -1,0 +1,177 @@
+package main
+
+import (
+	"./golib"
+	"./golib/conf"
+	"./golib/util"
+	"./golib/websocket"
+	"bytes"
+	"log"
+	"net/http"
+	"runtime/debug"
+	"strconv"
+	"strings"
+	"time"
+)
+
+type untidyHandle struct {
+	fs http.Handler
+}
+
+const (
+	TIMEOUT_HANDLER_SEC = 25 * time.Second
+	TIMEOUT_READ_SEC    = 15 * time.Second
+	TIMEOUT_WRITE_SEC   = 30 * time.Second
+	MAX_HEADER_SIZE     = 1024 * 100
+)
+
+var htmlSp []byte
+var htmlRead []byte
+var htmlSpGzip []byte
+var htmlReadGzip []byte
+var DenyNetworkStr = []string{
+	"27.120.96.134/32",
+	"27.120.104.14/32",
+	"36.55.238.17/32",
+	"36.55.242.163/32",
+	"54.199.184.85/32", // スレケン
+	"120.136.14.0/24",  // すれすた suresuta.jp
+}
+
+func main() {
+	debug.SetMaxThreads(512) // 512Thread
+
+	unkarInit()
+	unutil.InitDeny(DenyNetworkStr)
+	server := &http.Server{
+		//Addr: ":80",
+		Addr: ":8080",
+		Handler: http.TimeoutHandler(&untidyHandle{
+			fs: http.FileServer(http.Dir("public_html")),
+		}, TIMEOUT_HANDLER_SEC, unutil.TimeoutMessage),
+		ReadTimeout:    TIMEOUT_READ_SEC,
+		WriteTimeout:   TIMEOUT_WRITE_SEC,
+		MaxHeaderBytes: MAX_HEADER_SIZE,
+	}
+	ws := &http.Server{
+		Addr:           ":12345",
+		Handler:        unws.WsInit(),
+		ReadTimeout:    TIMEOUT_READ_SEC,
+		WriteTimeout:   TIMEOUT_WRITE_SEC,
+		MaxHeaderBytes: MAX_HEADER_SIZE,
+	}
+	// websocketサーバ起動
+	go ws.ListenAndServe()
+	log.Printf("listen start %s\n", server.Addr)
+	// サーバ起動
+	log.Fatal(server.ListenAndServe())
+}
+
+func unkarInit() {
+	htmlSp, htmlSpGzip = unutil.MustReadFile("template/sp_new.templ")
+	htmlRead, htmlReadGzip = unutil.MustReadFile("template/read_new.templ")
+}
+
+func (uh *untidyHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	defer unutil.Dispose(w, r)
+
+	// アクセス制限
+	unutil.Deny(r)
+	// 面倒なリクエストを弾く
+	unutil.Lazy(r)
+	// リダイレクト判定
+	unutil.Move(r)
+
+	var out unutil.Output
+	p := r.URL.Path
+	if p == "/r" || strings.Index(p, "/r/") == 0 {
+		out = unkar(r)
+	} else if p == "/convert.php" || strings.Index(p, "/convert.php/") == 0 {
+		out = untidy.ConvMain(p[12:], r)
+	} else if p == "/search" {
+		out = untidy.SearchMain(r)
+	} else if p == "/" || p == "/index.php" {
+		out = untidy.IndexMain(r, false)
+	} else {
+		// 後はファイルサーバーさんに任せる
+		tmpw := unutil.NewResponseWriter()
+		uh.fs.ServeHTTP(tmpw, r)
+		if tmpw.Code == http.StatusNotFound {
+			// 404だった場合、自前のエラーページを表示する
+			out = untidy.IndexMain(r, true)
+		} else {
+			// 通常出力
+			out.Code = tmpw.Code
+			out.Header = tmpw.Header()
+			out.Reader = tmpw.Buf
+			out.ZFlag = false
+		}
+		// キャッシュの有効期限を送付
+		out.Header.Set("Expires", unutil.CreateModString(time.Now().Add(unconf.OneYearSec)))
+	}
+
+	size := unutil.Print(w, r, out)
+	// ログ出力
+	unutil.Putlog(r, out.Code, size)
+}
+
+func unkar(r *http.Request) (out unutil.Output) {
+	var err error
+	i := 0
+	if c, cerr := r.Cookie("unkarjs"); cerr == nil {
+		i, err = strconv.Atoi(c.Value)
+	}
+	if i != 0 && err == nil {
+		// cookie設定済み
+		out = unkarjs(r)
+	} else {
+		p := r.URL.Path
+		l := len(p)
+		if l >= 3 && p[:3] == "/r/" {
+			out = untidy.Start(p[2:], r)
+		} else if l == 2 && p == "/r" {
+			out = untidy.Start("", r)
+		} else {
+			out = untidy.Start("", r)
+		}
+	}
+	return
+}
+
+// unkarjsで304を返さないこと！
+// 同一URLで複数ページ存在するため、モード遷移がうまくできなくなる
+func unkarjs(r *http.Request) (out unutil.Output) {
+	var buf []byte
+	out.Header = http.Header{}
+	out.ZFlag = false // 事前圧縮するためfalse
+
+	mobile := unutil.IsMobile(r)
+	if view, err := r.Cookie("unkarjs-device"); err == nil {
+		switch view.Value {
+		case "pc":
+			mobile = false
+		case "sp":
+			mobile = true
+		}
+	}
+
+	if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+		// gzip圧縮を使う
+		out.Header.Set("Content-Encoding", "gzip")
+		if mobile {
+			buf = htmlSpGzip
+		} else {
+			buf = htmlReadGzip
+		}
+	} else {
+		if mobile {
+			buf = htmlSp
+		} else {
+			buf = htmlRead
+		}
+	}
+	out.Header.Set("Content-Type", "text/html; charset=utf-8")
+	out.Code = http.StatusOK
+	out.Reader = bytes.NewBuffer(buf)
+	return
+}

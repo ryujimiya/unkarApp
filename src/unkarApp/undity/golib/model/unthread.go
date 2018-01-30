@@ -13,7 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"html"
 	"fmt" // DEBUG
 )
 
@@ -371,8 +370,13 @@ func (th *Thread) analyzeData() {
 		}
 		emailStr, _ := s.Find(".name").Find("a").Attr("href")
 		dateStr := s.Find(".date").Text()
-		messageStr := s.Find(".message").Text()
-		//messageStr = strings.Trim(messageStr, " ")
+		//messageStr := s.Find(".message").Text()
+		messageStr, _ := s.Find(".message").Html()
+		messageStr = strings.Replace(messageStr, "\r\n", "", -1)
+		messageStr = strings.Replace(messageStr, "<br/>", "\r\n", -1)
+		rep :=regexp.MustCompile( `<[^>]+>`)
+		messageStr = rep.ReplaceAllString(messageStr, "")
+		
 		fmt.Printf("threadNum=" + threadNum + "\r\n")
 		fmt.Printf("handleName=" + handleName + "\r\n")
 		fmt.Printf("emailStr=" + emailStr + "\r\n")
@@ -381,8 +385,8 @@ func (th *Thread) analyzeData() {
 
 		///////////////////////
 		// 整形処理
-		// HTMLエスケープ
-		messageStr = html.EscapeString(messageStr)
+		// 改行
+		messageStr = strings.Replace(messageStr, "\r\n", "<br/>", -1)
 		// URL処理
 		messageStr = RegsHttp.ReplaceAllStringFunc(messageStr, url_callback)
 		// 画像リンク処理

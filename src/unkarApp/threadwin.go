@@ -61,7 +61,6 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	// 実行ファイルパスを取得
 	exePath, _ := os.Executable()
 	exeDir := filepath.Dir(exePath)
-
 	// 表示用htmlファイルに保存
 	tmpHtmlFilename := fmt.Sprintf("%s_%d.html", boardName, threadNo)
 	tmpHtmlFilepath := exeDir + "\\tmp\\" + tmpHtmlFilename

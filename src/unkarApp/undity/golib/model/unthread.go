@@ -70,6 +70,8 @@ var RegsArchive = regexp.MustCompile(`\.(?:t(?:ar|gz)|[7gx]z|bz2|cab|lzh|rar|zip
 var RegsYoutube = regexp.MustCompile(`^(?:www\.)?youtube\.(?:com|jp|co\.jp)/watch(?:_videos)?\?.*v(?:ideo_ids)?=([\-\w]+)`)
 var RegsYoutubeMin = regexp.MustCompile(`^youtu\.be/([\-\w]+)`)
 
+var RegsHtmlTag = regexp.MustCompile( `<[^>]+>`)
+
 var CorruptDatStringList = [5]string{
 	CORRUPT_DAT_STRING,
 	CORRUPT_DAT_STRING,
@@ -136,7 +138,7 @@ func hCheck(ttp, matchurl string) string {
 }
 
 func createImage(ttp, matchurl string) string {
-	return `<img src="` + hAdd(ttp, matchurl) + `">`
+	return `<img src="` + hAdd(ttp, matchurl) + `" style="width: 100%">`
 }
 
 func createYoutubeThumb(id string) string {
@@ -372,10 +374,10 @@ func (th *Thread) analyzeData() {
 		dateStr := s.Find(".date").Text()
 		//messageStr := s.Find(".message").Text()
 		messageStr, _ := s.Find(".message").Html()
-		messageStr = strings.Replace(messageStr, "\r\n", "", -1)
+		messageStr = strings.Replace(messageStr, "\r", "", -1)
+		messageStr = strings.Replace(messageStr, "\n", "", -1)
 		messageStr = strings.Replace(messageStr, "<br/>", "\r\n", -1)
-		rep :=regexp.MustCompile( `<[^>]+>`)
-		messageStr = rep.ReplaceAllString(messageStr, "")
+		messageStr = RegsHtmlTag.ReplaceAllString(messageStr, "")
 		
 		fmt.Printf("threadNum=" + threadNum + "\r\n")
 		fmt.Printf("handleName=" + handleName + "\r\n")

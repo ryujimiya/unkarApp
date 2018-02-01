@@ -8,7 +8,6 @@ import (
 	"strings"
 	//"log"
 	"os"
-	"path/filepath"
 )
 
 import (
@@ -58,18 +57,17 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	// 本文作成
 	htmlText := CreateHtmlText(boardName, threadNo)
 
-	// 実行ファイルパスを取得
-	exePath, _ := os.Executable()
-	exeDir := filepath.Dir(exePath)
+	// tmpディレクトリ
+	tmpDir := unkarstub.GetTmpHtmlDir()
 	// 表示用htmlファイルに保存
 	tmpHtmlFilename := fmt.Sprintf("%s_%d.html", boardName, threadNo)
-	tmpHtmlFilepath := exeDir + "\\tmp\\" + tmpHtmlFilename
+	tmpHtmlFilepath := tmpDir + "\\" + tmpHtmlFilename
 	fmt.Printf("tmpHtmlFilepath=" + tmpHtmlFilepath + "\r\n")
 	SaveToTmpHtml(tmpHtmlFilepath, htmlText)
 
 	// 表示用htmlのURL
-	exeDir = strings.Replace(exeDir, "\\", "/", -1)
-	tmpHtmlUrl := "file:///" + exeDir + "/tmp/" + tmpHtmlFilename
+	tmpDir = strings.Replace(tmpDir, "\\", "/", -1)
+	tmpHtmlUrl := "file:///" + tmpDir + "/" + tmpHtmlFilename
 	fmt.Printf("tmpHtmlUrl=" + tmpHtmlUrl + "\r\n")
 
 	// メインウィンドウのウィンドウ生成

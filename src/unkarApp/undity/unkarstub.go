@@ -11,6 +11,8 @@ import (
 	"io"
 	"strings"
 	"regexp"
+	"os"
+	"path/filepath"
 	"fmt"
 	"log"
 )
@@ -28,6 +30,18 @@ import (
 func InitUnkar() {
 	// モデルの初期化処理
 	initModel()
+}
+
+/**
+ * tmpディレクトリ
+ */
+func GetTmpHtmlDir() string {
+	// 実行ファイルパスを取得
+	exePath, _ := os.Executable()
+	exeDir := filepath.Dir(exePath)
+	// 表示用htmlファイル格納ディレクトリ
+	tmpDir := exeDir + "\\tmp"
+	return tmpDir
 }
 
 ////////////////////////////////////////////////////////////

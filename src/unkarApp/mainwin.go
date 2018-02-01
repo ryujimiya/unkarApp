@@ -5,7 +5,6 @@ import (
 	//"./undity/golib/util"
 	//"./undity/golib/model"
 	"os"
-	"path/filepath"
 	"log"
 	"fmt"
 )
@@ -37,11 +36,8 @@ type MainWin struct {
  *         (2)エラー
  */
 func NewMainWin() (*MainWin, error) {
-	// 実行ファイルパスを取得
-	exePath, _ := os.Executable()
-	exeDir := filepath.Dir(exePath)
-	// 表示用htmlファイル格納ディレクトリ
-	tmpDir := exeDir + "\\tmp"
+	// tmpディレクトリ
+	tmpDir := unkarstub.GetTmpHtmlDir()
 	// 先ず前回起動時のディレクトリを削除
 	if err := os.RemoveAll(tmpDir); err != nil {
 		fmt.Println(err)

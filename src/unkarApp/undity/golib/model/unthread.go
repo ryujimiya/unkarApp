@@ -138,7 +138,7 @@ func hCheck(ttp, matchurl string) string {
 }
 
 func createImage(ttp, matchurl string) string {
-	return `<img src="` + hAdd(ttp, matchurl) + `" style="max-width: 100%">`
+	return `<img src="` + hAdd(ttp, matchurl) + `" style="max-width: 100%%"><br/>`
 }
 
 func createYoutubeThumb(id string) string {

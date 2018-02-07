@@ -371,7 +371,9 @@ func (th *Thread) analyzeData() {
 			handleName = s.Find(".name").Text()
 		}
 		emailStr, _ := s.Find(".name").Find("a").Attr("href")
-		dateStr := s.Find(".date").Text()
+		data1 := s.Find(".date").Text()
+		data2 := s.Find(".uid").Text()
+		dateStr := data1 + " " + data2
 		//messageStr := s.Find(".message").Text()
 		messageStr, _ := s.Find(".message").Html()
 		messageStr = strings.Replace(messageStr, "\r", "", -1)
@@ -411,6 +413,16 @@ func (th *Thread) analyzeData() {
 		}
 		tmpdata := ResItem{}
 		copy(tmpdata.Data[:], tmpdataarray)
+		if m := RegsIdsplit.FindStringSubmatch(tmpdata.Data[2]); m != nil {
+			rdata := m[2]
+			idl, ok := idlist[rdata]
+			if !ok {
+				idl = make([]int, 0, 3)
+			}
+			idlist[rdata] = append(idl, i)
+			tmpdata.Opt = []string{m[1], rdata, m[3]}
+		}
+
 		reslist = append(reslist, tmpdata)
 		
 		resNo++

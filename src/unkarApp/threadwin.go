@@ -55,7 +55,7 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	// スレッド番号の格納
 	threadWin.threadNo = threadNo
 	// 本文作成
-	htmlText := CreateHtmlText(boardName, threadNo)
+	htmlText := threadWin.createHtmlText(boardName, threadNo)
 
 	// tmpディレクトリ
 	tmpDir := unkarstub.GetTmpHtmlDir()
@@ -63,7 +63,7 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	tmpHtmlFilename := fmt.Sprintf("%s_%d.html", boardName, threadNo)
 	tmpHtmlFilepath := tmpDir + "\\" + tmpHtmlFilename
 	fmt.Printf("tmpHtmlFilepath=" + tmpHtmlFilepath + "\r\n")
-	SaveToTmpHtml(tmpHtmlFilepath, htmlText)
+	threadWin.saveToTmpHtml(tmpHtmlFilepath, htmlText)
 
 	// 表示用htmlのURL
 	tmpDir = strings.Replace(tmpDir, "\\", "/", -1)
@@ -101,7 +101,7 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	return threadWin, err
 }
 
-func CreateHtmlText(boardName string, threadNo int64) string {
+func (threadWin *ThreadWin) createHtmlText(boardName string, threadNo int64) string {
 	// 本文
 	var htmlText string
 	// unutilのモデル
@@ -124,7 +124,7 @@ func CreateHtmlText(boardName string, threadNo int64) string {
 	return htmlText
 }
 
-func SaveToTmpHtml(filename, htmlStr string) {
+func (threadWin *ThreadWin) saveToTmpHtml(filename, htmlStr string) {
 	out, err := os.Create(filename)
 	if err != nil {
 		return

@@ -154,7 +154,7 @@ func createYoutubeThumb(id string) string {
 func (th *Thread) analyzeData() {
 	fmt.Printf("Thread,analyzeData\n") // DEBUG
 	check := map[int]struct{}{}
-	i := 1
+	resNo := 1
 	host_url := th.HostUrl
 	//fmt.Printf("host_url" + host_url + "\r\n")
 	thread_base_url := host_url + "/" + th.url
@@ -197,18 +197,18 @@ func (th *Thread) analyzeData() {
 		if tl, ok := treelist[anc]; ok {
 			if !ok2 {
 				// >>1>>1>>1等をカウントしてしまうのを防ぐ
-				treelist[anc] = append(tl, i)
+				treelist[anc] = append(tl, resNo)
 			}
 		} else {
-			treelist[anc] = append(make([]int, 0, 3), i)
+			treelist[anc] = append(make([]int, 0, 3), resNo)
 		}
-		if al, ok := anchorlist[i]; ok {
+		if al, ok := anchorlist[resNo]; ok {
 			if !ok2 {
 				// >>1>>1>>1等をカウントしてしまうのを防ぐ
-				anchorlist[i] = append(al, anc)
+				anchorlist[resNo] = append(al, anc)
 			}
 		} else {
-			anchorlist[i] = append(make([]int, 0, 3), anc)
+			anchorlist[resNo] = append(make([]int, 0, 3), anc)
 		}
 
 		check[anc] = struct{}{}
@@ -224,7 +224,7 @@ func (th *Thread) analyzeData() {
 		if match == nil {
 			return matchstr
 		}
-		linklist[i] = true
+		linklist[resNo] = true
 
 		if RegsImage.MatchString(match[2]) {
 			// 画像ファイルっぽい
@@ -232,7 +232,7 @@ func (th *Thread) analyzeData() {
 			img := createImage(match[1], match[0])
 			fmt.Printf("img=" + img + "\r\n")
 			link += "<br>" + img
-			imagelist[i] = true
+			imagelist[resNo] = true
 			return link
 		} else if m := RegsThread.FindStringSubmatch(match[2]); m != nil {
 			// スレッドだった場合
@@ -240,7 +240,7 @@ func (th *Thread) analyzeData() {
 			if text != "" {
 				return text
 			}
-			threadlist[i] = true
+			threadlist[resNo] = true
 			if len(m) > 4 {
 				return `<a href="` + host_url + "/" + m[2] + "/" + m[3] + "/" + m[4] + `" class="thread-data-link">` + match[0] + "</a>"
 			}
@@ -267,7 +267,7 @@ func (th *Thread) analyzeData() {
 			ml := len(m)
 			if ml > 2 {
 				// スレッド
-				threadlist[i] = true
+				threadlist[resNo] = true
 				if ml > 3 {
 					return `<a href="` + host_url + "/" + m[1] + "/" + m[2] + m[3] + `" class="thread-data-link">` + match[0] + "</a>"
 				} else {
@@ -279,11 +279,11 @@ func (th *Thread) analyzeData() {
 		} else if RegsArchive.MatchString(match[2]) {
 			// アーカイブファイルっぽい
 			link := hCheck(match[1], match[0])
-			archivelist[i] = true
+			archivelist[resNo] = true
 			return link
 		} else if RegsMovie.MatchString(match[2]) {
 			// 動画サイトのURLを含んでいるURLも引っかかる可能性があるので条件の優先度は最低にしておく
-			movielist[i] = true
+			movielist[resNo] = true
 			link := hCheck(match[1], match[0])
 			// youtube
 			// サムネイルを付ける
@@ -306,7 +306,7 @@ func (th *Thread) analyzeData() {
 	// datの行数取得
 	l := unutil.MinInt(th.g2ch.NumLines(data)+1, 1100)
 	reslist := make([]ResItem, l)
-	for i < l && scanner.Scan() {
+	for resNo < l && scanner.Scan() {
 		check = map[int]struct{}{}
 		// datの行の文字列取得
 		line := scanner.Text()
@@ -338,12 +338,12 @@ func (th *Thread) analyzeData() {
 			if !ok {
 				idl = make([]int, 0, 3)
 			}
-			idlist[rdata] = append(idl, i)
+			idlist[rdata] = append(idl, resNo)
 			tmpdata.Opt = []string{m[1], rdata, m[3]}
 		}
 		tmpdata.Data[0] = RegsName.ReplaceAllString("<b>"+tmpdata.Data[0]+"</b>", "${1}")
-		reslist[i] = tmpdata
-		i++
+		reslist[resNo] = tmpdata
+		resNo++
 	}
 	if l <= 1 {
 		// 文字化けなどで正常なデータがない場合は上書き
@@ -358,12 +358,11 @@ func (th *Thread) analyzeData() {
 	if err != nil {
 		fmt.Print("url scarapping failed")
 	}
-	doc.Find("title").Each(func(i int, s *goquery.Selection) {
+	doc.Find("title").Each(func(_ int, s *goquery.Selection) {
 		threadTitleStr = s.Text()
 	})
 	fmt.Printf("threadTitleStr=" + threadTitleStr)
-	resNo := 0
-	doc.Find(".post").Each(func(i int, s* goquery.Selection) {
+	doc.Find(".post").Each(func(_ int, s* goquery.Selection) {
 		threadNum := s.Find(".number").Text()
 		//handleName := s.Find(".name").Find("a").Text()
 		handleName := s.Find(".name").Find("a").Text()
@@ -408,7 +407,7 @@ func (th *Thread) analyzeData() {
 		tmpdataarray[2] = dateStr
 		tmpdataarray[3] = messageStr
 		tmpdataarray[4] = ""
-		if (resNo == 0) {
+		if (resNo == 1) {
 			tmpdataarray[4] = threadTitleStr
 		}
 		tmpdata := ResItem{}
@@ -419,7 +418,7 @@ func (th *Thread) analyzeData() {
 			if !ok {
 				idl = make([]int, 0, 3)
 			}
-			idlist[rdata] = append(idl, i)
+			idlist[rdata] = append(idl, resNo)
 			tmpdata.Opt = []string{m[1], rdata, m[3]}
 		}
 

@@ -12,4 +12,4 @@ GO言語で書かれたunkarウェブサイトソースコード + GO WALK に�
 
 **Latest Release**  
 version1.0.0.0  
-　[installer](https://github.com/ryujimiya/unkarApp/blob/master/publish/)  
+　[ダウンロード](https://github.com/ryujimiya/unkarApp/blob/master/publish/)  

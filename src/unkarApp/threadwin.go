@@ -54,8 +54,18 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	threadWin.boardName = boardName
 	// スレッド番号の格納
 	threadWin.threadNo = threadNo
+	// ページ属性
+	attr := ""
+	//attr = "Anchor:@0!3" // まとめ（仮）
+	//attr = "Anchor:Default" // アンカー
+	//attr = "Link:All" // URL
+	//attr = "Tree:Link:All" // URL[+]
+	//attr = "Link:Image" // 画像
+	//attr = "Tree:Link:Image" // 画像[+]
+	//attr = "Link:Movie" // 動画
+	//attr = "Tree:Link:Movie" // 動画[+]
 	// 本文作成
-	htmlText := threadWin.createHtmlText(boardName, threadNo)
+	htmlText := threadWin.createHtmlText(boardName, threadNo, attr)
 
 	// tmpディレクトリ
 	tmpDir := unkarstub.GetTmpHtmlDir()
@@ -101,7 +111,7 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	return threadWin, err
 }
 
-func (threadWin *ThreadWin) createHtmlText(boardName string, threadNo int64) string {
+func (threadWin *ThreadWin) createHtmlText(boardName string, threadNo int64, attr string) string {
 	// 本文
 	var htmlText string
 	// unutilのモデル
@@ -111,7 +121,7 @@ func (threadWin *ThreadWin) createHtmlText(boardName string, threadNo int64) str
 	htmlText = ""
 
 	// スレッドのモデルを取得する
-	unutilModel = unkarstub.GetThreadModel(boardName, threadNo)
+	unutilModel = unkarstub.GetThreadModel(boardName, threadNo, attr)
 
 	// DEBUG
 	fmt.Printf("url=%s\r\n", unutilModel.GetUrl())
@@ -119,7 +129,7 @@ func (threadWin *ThreadWin) createHtmlText(boardName string, threadNo int64) str
 	fmt.Printf("className=%s\r\n", unutilModel.GetClassName())
 	fmt.Printf("server=%s\r\n", unutilModel.GetServer())
 
-    htmlText = unkarstub.GetBoardViewOutput(boardName, threadNo, unutilModel)
+    htmlText = unkarstub.GetBoardViewOutput(boardName, threadNo, attr, unutilModel)
 
 	return htmlText
 }

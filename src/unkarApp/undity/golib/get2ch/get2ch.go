@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	CONF_FOLDER      = "/2ch/dat"     // dat保管フォルダ名
+	CONF_FOLDER      = "./2ch/dat"     // dat保管フォルダ名
 	CONF_ITAURL_HOST = "menu.2ch.net" // 板情報取得URL
 	CONF_ITAURL_FILE = "bbsmenu.html"
 	BOURBON_HOST     = "bg20.2ch.net" // 2chキャッシュサーバ

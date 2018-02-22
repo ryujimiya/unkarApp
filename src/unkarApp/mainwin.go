@@ -14,6 +14,10 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
+const (
+	Version = "1.0.0.0"
+)
+
 ////////////////////////////////////////////////////////////
 // MainWin
 ////////////////////////////////////////////////////////////
@@ -59,7 +63,7 @@ func NewMainWin() (*MainWin, error) {
 	// メインウィンドウのウィンドウ生成
 	err := MainWindow {
 		AssignTo:	&mainWin.MainWindow,
-		Title:	"Unkar App",
+		Title:	"Unkar App " + Version,
 		MinSize:	Size{600, 400},
 		Layout:	VBox{},
 		Children: []Widget {

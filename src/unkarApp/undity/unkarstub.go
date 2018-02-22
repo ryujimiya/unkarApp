@@ -233,13 +233,16 @@ func GetBoardModel(boardName string) unutil.Model {
  * スレッドモデルを取得する
  * @return unutilのモデル
  */
-func GetThreadModel(boardName string, threadNo int64) unutil.Model {
+func GetThreadModel(boardName string, threadNo int64, attr string) unutil.Model {
 	// unutilのモデル
 	var unutilModel unutil.Model
 	// ホスト
 	var host string = "/r"
 	// パス
 	var path string = "/" + boardName + "/" + fmt.Sprintf("%d", threadNo)
+	if attr != "" {
+		path += "/" + attr
+	}
 
 	// モデルの取得
 	unutilModel = getModel(host, path)
@@ -290,11 +293,14 @@ func getViewOutput(host string, path string, model unutil.Model) string {
          model モデル
   @return HTML出力文字列
 */
-func GetBoardViewOutput(boardName string, threadNo int64, model unutil.Model) string {
+func GetBoardViewOutput(boardName string, threadNo int64, attr string, model unutil.Model) string {
 	// ホスト
 	var host string = "/r"
 	// パス
 	var path string = "/" + boardName + "/" + fmt.Sprintf("%d", threadNo)
+	if attr != "" {
+		path += "/" + attr
+	}
 	
 	return getViewOutput(host, path, model)
 }

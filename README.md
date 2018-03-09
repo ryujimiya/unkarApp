@@ -13,3 +13,17 @@ GO言語で書かれたunkarウェブサイトソースコード + GO WALK に�
 **Latest Release**  
 version1.0.0.0  
 　[ダウンロード](https://github.com/ryujimiya/unkarApp/blob/master/publish/)  
+
+**Important**
+  Windows10でスレッドウィンドウでJavaScriptのエラーが発生する場合
+  レジストリに下記値を追加してください。
+
+  HKEY_USERS
+      S-xxxxxx
+          Software
+              Microsoft
+                  Internet Explorer
+                      Main
+                          FeatureControl
+                             FEATURE_BROWSER_EMULATION
+                                 unkarApp.exe = (DWORD) 11001

@@ -592,8 +592,8 @@ unkarl.resPop.prototype.mouseEventAnalyze_ = function(e, elm){
 		} else if(line = path.match(unkarl.regs.ita)){
 			this.getPageTitle_(line[1]);
 		} else if((line = path.match(unkarl.regs.youtube)) || (line = path.match(unkarl.regs.youtube_min))){
-			this.popobj.append('youtube' + line[1], '<iframe width="560" height="340" src="http://www.youtube.com/embed/' + line[1] + '?hd=1&rel=0" style="border:none;"></iframe>');
-		} else if(unkarl.regs.nico2_min.test(path)){
+			this.popobj.append('youtube' + line[1], '<iframe width="560" height="340" src="https://www.youtube.com/embed/' + line[1] + '?hd=1&rel=0" style="border:none;"></iframe>');
+ 		} else if(unkarl.regs.nico2_min.test(path)){
 			if(line = path.match(unkarl.regs.nico2)){
 				url = 'http://ext.nicovideo.jp/thumb/' + line[1];
 			} else if(line = path.match(unkarl.regs.nico2_live)){

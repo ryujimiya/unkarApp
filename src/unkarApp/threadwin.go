@@ -1,4 +1,4 @@
-﻿package main
+package main
 
 import (
 	"./undity"
@@ -19,7 +19,6 @@ import (
 //	"github.com/lxn/win"
 //)
 
-
 ////////////////////////////////////////////////////////////
 // ThreadWin
 ////////////////////////////////////////////////////////////
@@ -31,8 +30,6 @@ type ThreadWin struct {
 	*walk.MainWindow
 	// 表示用WebView
 	webView *walk.WebView
-	// 本文表示用エディットボックス
-	//textEditBody *walk.TextEdit
 	// 板名
 	boardName string
 	// スレッド番号
@@ -81,27 +78,22 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	fmt.Printf("tmpHtmlUrl=" + tmpHtmlUrl + "\r\n")
 
 	// メインウィンドウのウィンドウ生成
-	err := MainWindow {
-		AssignTo:	&threadWin.MainWindow,
-		Title:	"Unkar App",
-		MinSize:	Size{850, 600},
-		Layout:	VBox{},
-		Children: []Widget {
+	err := MainWindow{
+		AssignTo: &threadWin.MainWindow,
+		Title:    "Unkar App",
+		MinSize:  Size{850, 600},
+		Layout:   VBox{},
+		Children: []Widget{
 			WebView{
-				AssignTo: &threadWin.webView,
-				Name:     "スレッド",
-				URL: tmpHtmlUrl,
+				AssignTo:           &threadWin.webView,
+				Name:               "スレッド",
+				URL:                tmpHtmlUrl,
+				ShortcutsEnabled:   true,
+				ContextMenuEnabled: true,
 			},
-			/*
-			TextEdit {
-				AssignTo: &threadWin.textEditBody,
-				ReadOnly: true,
-				Text: htmlText,
-			},
-			*/
 		},
 	}.Create()
-	
+
 	// 子ウィンドウ化
 	// Note:win.SetParentだと、親WindowにクリッピングされたWindowになってしまう
 	//win.SetParent(threadWin.Handle(), parentWin.Handle())
@@ -129,7 +121,7 @@ func (threadWin *ThreadWin) createHtmlText(boardName string, threadNo int64, att
 	fmt.Printf("className=%s\r\n", unutilModel.GetClassName())
 	fmt.Printf("server=%s\r\n", unutilModel.GetServer())
 
-    htmlText = unkarstub.GetBoardViewOutput(boardName, threadNo, attr, unutilModel)
+	htmlText = unkarstub.GetBoardViewOutput(boardName, threadNo, attr, unutilModel)
 
 	return htmlText
 }
@@ -142,4 +134,3 @@ func (threadWin *ThreadWin) saveToTmpHtml(filename, htmlStr string) {
 	fmt.Fprint(out, htmlStr)
 	out.Close()
 }
-

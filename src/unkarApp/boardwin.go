@@ -1,12 +1,12 @@
-﻿package main
+package main
 
 import (
 	"./undity"
-	"./undity/golib/util"
 	"./undity/golib/model"
-	"log"
-	"fmt"
+	"./undity/golib/util"
 	"errors"
+	"fmt"
+	"log"
 )
 
 import (
@@ -18,7 +18,6 @@ import (
 //	"github.com/lxn/win"
 //)
 
-
 ////////////////////////////////////////////////////////////
 // BoardWin
 ////////////////////////////////////////////////////////////
@@ -29,19 +28,18 @@ type BoardWin struct {
 	// 派生元：Walkメインウィンドウ
 	*walk.MainWindow
 	// スレッド一覧リストボックス
-	listBoxThread	*walk.ListBox
+	listBoxThread *walk.ListBox
 	// 板名
 	boardName string
 	// スレッド一覧モデル
-	threadListModel	*ThreadListModel
+	threadListModel *ThreadListModel
 }
 
 /**
- * ソート属性
- *  (ラジオボタングループ用データバインディングのデータ構造体)
+ * 板ウィンドウモデル
  */
-type SortAttr struct {
-	// ソート属性文字列
+type BoardWinModel struct {
+	// ソート属性  (ラジオボタングループ用データバインディングのデータ構造体)
 	//////////////////////////////////////////
 	// "sp"
 	// "勢い順↓"
@@ -59,9 +57,8 @@ type SortAttr struct {
 	// "番号順↑"
 	// "no":
 	// "番号順↓"
-	AttrStr string
+	SortAttrStr string
 }
-
 
 /**
  * コンストラクタ
@@ -73,7 +70,7 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 	// ソート属性
 	// "sp"
 	// "勢い順↓"
-	curSortAttr:= &SortAttr{"sp"}
+	boardWinModel := &BoardWinModel{SortAttrStr: "sp"}
 
 	// 板ウィンドウ生成
 	boardWin := new(BoardWin)
@@ -81,24 +78,24 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 	// 板名の格納
 	boardWin.boardName = boardName
 	// モデルの生成
-	boardWin.threadListModel = NewThreadListModel(boardName, curSortAttr.AttrStr)
+	boardWin.threadListModel = NewThreadListModel(boardName, boardWinModel.SortAttrStr)
 
 	// メインウィンドウのウィンドウ生成
-	err := MainWindow {
-		AssignTo:	&boardWin.MainWindow,
-		Title:	"Unkar App",
+	err := MainWindow{
+		AssignTo: &boardWin.MainWindow,
+		Title:    "Unkar App",
 		//MinSize:	Size{600, 400},
-		MinSize:	Size{600, 800},
-		Layout:	VBox{},
+		MinSize: Size{600, 800},
+		Layout:  VBox{},
 		DataBinder: DataBinder{
-			DataSource: curSortAttr,
+			DataSource: boardWinModel,
 			AutoSubmit: true,
 			OnSubmitted: func() {
 				//fmt.Println("DataBinder::OnSubmitted start\r\n")
-				fmt.Println(curSortAttr)
+				fmt.Println(boardWinModel)
 
 				// モデルの生成
-				boardWin.threadListModel = NewThreadListModel(boardWin.boardName, curSortAttr.AttrStr)
+				boardWin.threadListModel = NewThreadListModel(boardWin.boardName, boardWinModel.SortAttrStr)
 				// リストボックスのカレントインデックスを非選択に設定する
 				// これをやらないとモデル再設定中にインデックスの変更イベントが発生して
 				//   panic: runtime error: index out of range
@@ -109,15 +106,15 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 				//fmt.Println("DataBinder::OnSubmitted end\r\n")
 			},
 		},
-		Children: []Widget {
+		Children: []Widget{
 			///////////////////
-			GroupBox {
+			GroupBox{
 				Layout: HBox{},
-				Children: []Widget {
-			///////////////////
+				Children: []Widget{
+					///////////////////
 					// RadioButtonGroup is needed for data binding only.
 					RadioButtonGroup{
-						DataMember: "AttrStr",
+						DataMember: "SortAttrStr",
 						Buttons: []RadioButton{
 							RadioButton{
 								Name:  "spRB",
@@ -161,25 +158,25 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 							},
 						},
 					},
-			///////////////////
+					///////////////////
 				},
 			},
 			///////////////////
 
-			ListBox {
+			ListBox{
 				AssignTo: &boardWin.listBoxThread,
-				Model: boardWin.threadListModel,
+				Model:    boardWin.threadListModel,
 				OnCurrentIndexChanged: boardWin.listBoxThreadCurrentIndexChanged,
-				OnItemActivated: boardWin.listBoxThreadItemActivated,
+				OnItemActivated:       boardWin.listBoxThreadItemActivated,
 			},
 		},
 	}.Create()
-	
+
 	// デフォルトのフォント(walk.Fontのinit関数参照)
 	//font, err:= walk.NewFont("MS Shell Dlg 2", 8, 0x00)
 	// フォントサイズを大きくする
-	font, err:= walk.NewFont("MS Shell Dlg 2", 12, 0x00)
-	if (err != nil) {
+	font, err := walk.NewFont("MS Shell Dlg 2", 12, 0x00)
+	if err != nil {
 		log.Fatal(err)
 	}
 	boardWin.listBoxThread.SetFont(font)
@@ -201,7 +198,7 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 func (boardWin *BoardWin) listBoxThreadCurrentIndexChanged() {
 	i := boardWin.listBoxThread.CurrentIndex()
 	item := &boardWin.threadListModel.items[i]
-	
+
 	name := item.name
 	value := item.value
 	fmt.Println("CurrentIndex: ", i)
@@ -217,7 +214,7 @@ func (boardWin *BoardWin) listBoxThreadCurrentIndexChanged() {
 func (boardWin *BoardWin) listBoxThreadItemActivated() {
 	i := boardWin.listBoxThread.CurrentIndex()
 	item := &boardWin.threadListModel.items[i]
-	
+
 	name := item.name
 	value := item.value
 	fmt.Println(name)
@@ -230,13 +227,13 @@ func (boardWin *BoardWin) listBoxThreadItemActivated() {
 	fmt.Println("Spd=", value.Spd)
 
 	//walk.MsgBox(boardWin, "Name", name, walk.MsgBoxIconInformation)
-	
+
 	//model := unkarstub.GetThreadModel(boardWin.boardName, value.Sin)
 	//fmt.Println(model)
 
 	// スレッドウィンドウの生成
 	threadWin, err := NewThreadWin(boardWin, boardWin.boardName, value.Sin)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 	// 表示
@@ -250,8 +247,8 @@ func (boardWin *BoardWin) listBoxThreadItemActivated() {
  * リストボックスアイテム
  */
 type ThreadListItem struct {
-	name	string
-	value	*unmodel.ThreadItem
+	name  string
+	value *unmodel.ThreadItem
 }
 
 ////////////////////////////////////////////////////////////
@@ -285,24 +282,24 @@ func NewThreadListModel(boardName string, sortAttrStr string) *ThreadListModel {
 	fmt.Printf("server=%s\r\n", unutilModel.GetServer())
 
 	/*
-	//////////////////////////////////////////
-	// "sp"
-	// "勢い順↓"
-	// "sp2":
-	// "勢い順↑"
-	// "si":
-	// "時間順↓"
-	// "si2":
-	// "時間順↑"
-	// "re":
-	// "レス数順↓"
-	// "re2":
-	// "レス数順↑"
-	// "":
-	// "番号順↑"
-	// "no":
-	// "番号順↓"
-	attr = "sp"
+		//////////////////////////////////////////
+		// "sp"
+		// "勢い順↓"
+		// "sp2":
+		// "勢い順↑"
+		// "si":
+		// "時間順↓"
+		// "si2":
+		// "時間順↑"
+		// "re":
+		// "レス数順↓"
+		// "re2":
+		// "レス数順↑"
+		// "":
+		// "番号順↑"
+		// "no":
+		// "番号順↓"
+		attr = "sp"
 	*/
 	attr = sortAttrStr
 	nowData := unutilModel.GetData()
@@ -313,18 +310,18 @@ func NewThreadListModel(boardName string, sortAttrStr string) *ThreadListModel {
 	fmt.Printf("dir=\r\n")
 	fmt.Print(dir)
 	fmt.Printf("\r\n")
-	
+
 	// スレッド一覧を取得する
 	list, ok := nowData.(*unmodel.ThreadItems)
 	if !ok {
-		err:= errors.New("failed to get nowData")
+		err := errors.New("failed to get nowData")
 		log.Fatal(err)
 	}
 	//////////////////////////////////////////
 
 	// リストボックスのモデルを生成
-	model := &ThreadListModel {items: make([]ThreadListItem, len(*list)),}
-	for i, thread := range(*list) {
+	model := &ThreadListModel{items: make([]ThreadListItem, len(*list))}
+	for i, thread := range *list {
 		// DEBUG
 		//fmt.Println("thread=", thread)
 

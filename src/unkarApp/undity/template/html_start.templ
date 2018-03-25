@@ -4,20 +4,20 @@
 <meta charset="UTF-8">
 <title>{{.Title}}</title>
 {{if .Canonical}}<link rel="canonical" href="{{.CanonicalUrl}}">
-{{end}}<link rel="stylesheet" href="../public_html/css/style-sp.css" media="screen and (max-width: 800px)">
-<link rel="stylesheet" href="../public_html/css/style.css" media="screen and (min-width: 801px)">
-<link rel="shortcut icon" href="../public_html/favicon.ico">
-<link rel="icon" href="../public_html/favicon.ico">
+{{end}}<link rel="stylesheet" href="../undity/public_html/css/style-sp.css" media="screen and (max-width: 800px)">
+<link rel="stylesheet" href="../undity/public_html/css/style.css" media="screen and (min-width: 801px)">
+<link rel="shortcut icon" href="../undity/public_html/favicon.ico">
+<link rel="icon" href="../undity/public_html/favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, minimum-scale=0.1">
 <meta property="og:title" content="{{html .Title}}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="{{.CanonicalUrl}}">
-<meta property="og:image" content="../public_html/img/podunko.png">
+<meta property="og:image" content="../undity/public_html/img/podunko.png">
 <meta property="og:site_name" content="unkar">
 {{if ne .DescriptionStr ""}}<meta property="og:description" content="{{html .DescriptionStr}}">
 <meta name="description" content="{{html .DescriptionStr}}">
 {{end}}<!--[if lt IE 9]>
-<link rel="stylesheet" href="../public_html/css/style.css">
+<link rel="stylesheet" href="../undity/public_html/css/style.css">
 <![endif]-->
 </head>
 <body>

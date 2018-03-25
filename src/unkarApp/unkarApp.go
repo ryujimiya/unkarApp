@@ -1,8 +1,10 @@
-﻿package main
+package main
 
 import (
 	"log"
 )
+
+import _ "runtime/cgo"
 
 ////////////////////////////////////////////////////////////
 // unkarApp
@@ -23,4 +25,3 @@ func main() {
 	// 表示
 	mw.Run()
 }
-

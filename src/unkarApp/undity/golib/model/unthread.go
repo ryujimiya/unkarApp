@@ -70,7 +70,11 @@ var RegsArchive = regexp.MustCompile(`\.(?:t(?:ar|gz)|[7gx]z|bz2|cab|lzh|rar|zip
 var RegsYoutube = regexp.MustCompile(`^(?:www\.)?youtube\.(?:com|jp|co\.jp)/watch(?:_videos)?\?.*v(?:ideo_ids)?=([\-\w]+)`)
 var RegsYoutubeMin = regexp.MustCompile(`^youtu\.be/([\-\w]+)`)
 
-var RegsHtmlTag = regexp.MustCompile( `<[^>]+>`)
+// <img src="//img.5ch.net/ico/aka.gif"/> <br/> 俺「助六買ってきて。」 (再生成後のHTML)
+var RegsImgTag5chIcon = regexp.MustCompile(`<img src="(//img.5ch.net/ico/[^"]+)"/>`)
+var Regs5chIconUrl = regexp.MustCompile(`//img.5ch.net/ico/`)
+var RegsImgurBlank = regexp.MustCompile(`(i[\s]*m[\s]*g[\s]*u[\s]*r[\s]*\.com)`)
+var RegsHtmlTag = regexp.MustCompile(`<[^>]+>`)
 
 var CorruptDatStringList = [5]string{
 	CORRUPT_DAT_STRING,
@@ -145,7 +149,7 @@ func createYoutubeThumb(id string) string {
 	link := `<div class="youtube-thumb">`
 	for j := 1; j <= 3; j++ {
 		jstr := strconv.Itoa(j)
-		link += `<img src="http://img.youtube.com/vi/` + id + `/` + jstr + `.jpg" alt="YouTubeサムネイル[` + id + `] - ` + jstr + `枚目" width="120" height="90">`
+		link += `<img src="https://img.youtube.com/vi/` + id + `/` + jstr + `.jpg" alt="YouTubeサムネイル[` + id + `] - ` + jstr + `枚目" width="120" height="90">`
 	}
 	link += `</div>`
 	return link
@@ -228,9 +232,12 @@ func (th *Thread) analyzeData() {
 
 		if RegsImage.MatchString(match[2]) {
 			// 画像ファイルっぽい
-			link := hCheck(match[1], match[0])
+			link := ""
+			if !Regs5chIconUrl.MatchString(match[0]) { // アイコンのときはリンクを表示しない
+				link = hCheck(match[1], match[0])
+			}
 			img := createImage(match[1], match[0])
-			fmt.Printf("img=" + img + "\r\n")
+			//fmt.Printf("img=" + img + "\r\n")
 			link += "<br>" + img
 			imagelist[resNo] = true
 			return link
@@ -363,10 +370,9 @@ func (th *Thread) analyzeData() {
 	})
 	fmt.Printf("threadTitleStr=" + threadTitleStr)
 	doc.Find(".post").Each(func(_ int, s* goquery.Selection) {
-		threadNum := s.Find(".number").Text()
-		//handleName := s.Find(".name").Find("a").Text()
+		//threadNum := s.Find(".number").Text()
 		handleName := s.Find(".name").Find("a").Text()
-		if (handleName == "") {
+		if handleName == "" {
 			handleName = s.Find(".name").Text()
 		}
 		emailStr, _ := s.Find(".name").Find("a").Attr("href")
@@ -375,16 +381,19 @@ func (th *Thread) analyzeData() {
 		dateStr := data1 + " " + data2
 		//messageStr := s.Find(".message").Text()
 		messageStr, _ := s.Find(".message").Html()
+		// NOTE: このHTMLは再生成されており原文とはことなる 特に <br>が<br/> <img>が<img/>になるので注意
 		messageStr = strings.Replace(messageStr, "\r", "", -1)
 		messageStr = strings.Replace(messageStr, "\n", "", -1)
 		messageStr = strings.Replace(messageStr, "<br/>", "\r\n", -1)
-		messageStr = RegsHtmlTag.ReplaceAllString(messageStr, "")
+		messageStr = RegsImgTag5chIcon.ReplaceAllString(messageStr, `https:${1} `) // アイコン対応
+		messageStr = RegsHtmlTag.ReplaceAllString(messageStr, "") // HTMLタグ削除
+		messageStr = RegsImgurBlank.ReplaceAllString(messageStr, `imgur.com`) // im gur.com対応
 		
-		fmt.Printf("threadNum=" + threadNum + "\r\n")
-		fmt.Printf("handleName=" + handleName + "\r\n")
-		fmt.Printf("emailStr=" + emailStr + "\r\n")
-		fmt.Printf("dateStr=" + dateStr + "\r\n")
-		fmt.Printf("messageStr=" + messageStr + "\r\n")
+		//fmt.Printf("threadNum=" + threadNum + "\r\n")
+		//fmt.Printf("handleName=" + handleName + "\r\n")
+		//fmt.Printf("emailStr=" + emailStr + "\r\n")
+		//fmt.Printf("dateStr=" + dateStr + "\r\n")
+		//fmt.Printf("messageStr=" + messageStr + "\r\n")
 
 		///////////////////////
 		// 整形処理

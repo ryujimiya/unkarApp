@@ -1,12 +1,12 @@
-﻿package main
+package main
 
 import (
 	"./undity"
 	//"./undity/golib/util"
 	//"./undity/golib/model"
-	"os"
-	"log"
 	"fmt"
+	"log"
+	"os"
 )
 
 import (
@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	Version = "1.0.0.0"
+	Version = "1.0.0.1"
 )
 
 ////////////////////////////////////////////////////////////
@@ -28,9 +28,9 @@ type MainWin struct {
 	// 派生元：Walkメインウィンドウ
 	*walk.MainWindow
 	// 板一覧リストボックス
-	listBoxBoard	*walk.ListBox
+	listBoxBoard *walk.ListBox
 	// 板一覧モデル
-	boardListModel	*BoardListModel
+	boardListModel *BoardListModel
 }
 
 /**
@@ -59,32 +59,32 @@ func NewMainWin() (*MainWin, error) {
 
 	// モデルの生成
 	mainWin.boardListModel = NewBoardListModel()
-	
+
 	// メインウィンドウのウィンドウ生成
-	err := MainWindow {
-		AssignTo:	&mainWin.MainWindow,
-		Title:	"Unkar App " + Version,
-		MinSize:	Size{600, 400},
-		Layout:	VBox{},
-		Children: []Widget {
-			ListBox {
+	err := MainWindow{
+		AssignTo: &mainWin.MainWindow,
+		Title:    "Unkar App " + Version,
+		MinSize:  Size{600, 400},
+		Layout:   VBox{},
+		Children: []Widget{
+			ListBox{
 				AssignTo: &mainWin.listBoxBoard,
-				Model: mainWin.boardListModel,
+				Model:    mainWin.boardListModel,
 				OnCurrentIndexChanged: mainWin.listBoxBoardCurrentIndexChanged,
-				OnItemActivated: mainWin.listBoxBoardItemActivated,
+				OnItemActivated:       mainWin.listBoxBoardItemActivated,
 			},
 		},
 	}.Create()
-	
+
 	// デフォルトのフォント(walk.Fontのinit関数参照)
 	//font, err:= walk.NewFont("MS Shell Dlg 2", 8, 0x00)
 	// フォントサイズを大きくする
-	font, err:= walk.NewFont("MS Shell Dlg 2", 12, 0x00)
-	if (err != nil) {
+	font, err := walk.NewFont("MS Shell Dlg 2", 12, 0x00)
+	if err != nil {
 		log.Fatal(err)
 	}
 	mainWin.listBoxBoard.SetFont(font)
-	
+
 	return mainWin, err
 }
 
@@ -96,7 +96,7 @@ func NewMainWin() (*MainWin, error) {
 func (mainWin *MainWin) listBoxBoardCurrentIndexChanged() {
 	i := mainWin.listBoxBoard.CurrentIndex()
 	item := &mainWin.boardListModel.items[i]
-	
+
 	name := item.name
 	value := item.value
 	fmt.Println("CurrentIndex: ", i)
@@ -112,7 +112,7 @@ func (mainWin *MainWin) listBoxBoardCurrentIndexChanged() {
 func (mainWin *MainWin) listBoxBoardItemActivated() {
 	i := mainWin.listBoxBoard.CurrentIndex()
 	item := &mainWin.boardListModel.items[i]
-	
+
 	//name := item.name
 	value := item.value
 	//walk.MsgBox(mainWin, "Name", name, walk.MsgBoxIconInformation)
@@ -120,7 +120,7 @@ func (mainWin *MainWin) listBoxBoardItemActivated() {
 
 	// 板ウィンドウの生成
 	boardWin, err := NewBoardWin(mainWin, value)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 	// 表示
@@ -134,8 +134,8 @@ func (mainWin *MainWin) listBoxBoardItemActivated() {
  * リストボックスアイテム
  */
 type BoardListItem struct {
-	name	string
-	value	string
+	name  string
+	value string
 }
 
 ////////////////////////////////////////////////////////////
@@ -173,9 +173,9 @@ func NewBoardListModel() *BoardListModel {
 			boardListAll = append(boardListAll, board)
 		}
 	}
-	
+
 	// リストボックスのモデルを生成
-	model := &BoardListModel {items: make([]BoardListItem, len(boardListAll)),}
+	model := &BoardListModel{items: make([]BoardListItem, len(boardListAll))}
 	for i, board := range boardListAll {
 		// アイテム名(表示名)
 		name := board.Name

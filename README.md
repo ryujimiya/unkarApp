@@ -4,7 +4,7 @@
 Windows Nativeな5ch Viewerです 
 
 **What is unkarApp**  
-GO言語で書かれたunkarウェブサイトソースコード + GO WALK によりWindowsアプリを実現しています 
+Go言語で書かれたunkarウェブサイトソースコード + GO WALK によりWindowsアプリを実現しています 
 
 **Latest Release**  
 version1.0.0.1  

@@ -22,7 +22,7 @@ func main() {
 			fmt.Println(it.Name())
 			sync <- true
 			go func(it os.FileInfo) {
-				board(RootDir+"/"+it.Name())
+				board(RootDir + "/" + it.Name())
 				<-sync
 			}(it)
 		}

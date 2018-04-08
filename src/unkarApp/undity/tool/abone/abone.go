@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	ROOT_DIR   = "/2ch/dat"
-	ABONE_TEXT = "unkarで削除<>あぼーん<>あぼーん<>あぼーん<>あぼーん"
+	ROOT_DIR        = "/2ch/dat"
+	ABONE_TEXT      = "unkarで削除<>あぼーん<>あぼーん<>あぼーん<>あぼーん"
 	PARALLEL_DELETE = 16
 
 	DB_USER  = "unkar"

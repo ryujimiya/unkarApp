@@ -1,20 +1,20 @@
-﻿package unkarstub
+package unkarstub
 
 import (
-	"./golib/get2ch"
 	"./golib/conf"
+	"./golib/get2ch"
 	"./golib/model"
-	"./golib/view"
 	"./golib/util"
-	"net/http"
+	"./golib/view"
 	"bufio"
+	"fmt"
 	"io"
-	"strings"
-	"regexp"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
-	"fmt"
-	"log"
+	"regexp"
+	"strings"
 )
 
 /**
@@ -130,7 +130,7 @@ func UnkarIndexMain() []ServerItem {
 			},
 		},
 	}, list...)
-	
+
 	return list
 }
 
@@ -213,15 +213,14 @@ func getModel(host string, path string) unutil.Model {
  * @return unutilのモデル
  */
 func GetBoardModel(boardName string) unutil.Model {
-	// unutilのモデル
-	var unutilModel unutil.Model
 	// ホスト
-	var host string = "/r"
+	host := "/r"
 	// パス
-	var path string = "/" + boardName
+	path := "/" + boardName
 
+	// unutilのモデル
 	// モデルの取得
-	unutilModel = getModel(host, path)
+	unutilModel := getModel(host, path)
 
 	return unutilModel
 }
@@ -234,47 +233,43 @@ func GetBoardModel(boardName string) unutil.Model {
  * @return unutilのモデル
  */
 func GetThreadModel(boardName string, threadNo int64, attr string) unutil.Model {
-	// unutilのモデル
-	var unutilModel unutil.Model
 	// ホスト
-	var host string = "/r"
+	host := "/r"
 	// パス
-	var path string = "/" + boardName + "/" + fmt.Sprintf("%d", threadNo)
+	path := "/" + boardName + "/" + fmt.Sprintf("%d", threadNo)
 	if attr != "" {
 		path += "/" + attr
 	}
 
+	// unutilのモデル
 	// モデルの取得
-	unutilModel = getModel(host, path)
+	unutilModel := getModel(host, path)
 
 	return unutilModel
 }
 
-
 /**
   UnkarのViewの出力を取得する
   @param host ホストURL
-         path パス
-         model モデル
+  @param path パス
+  @param model モデル
   @return HTML出力文字列
 */
 func getViewOutput(host string, path string, model unutil.Model) string {
-	var outputStr string
-	
-	outputStr = ""
+	outputStr := ""
 
 	// dummy
-	r, _ := http.NewRequest("GET", host + path, nil)
-	
+	r, _ := http.NewRequest("GET", host+path, nil)
+
 	viewfunc := unview.NewViewContainer
 	view := viewfunc(path, r)
 	//host := view.GetHostUrl()
 	output := view.PrintData(model)
-	
+
 	bufReader := bufio.NewReader(output.Reader)
 	for {
 		line, _, err := bufReader.ReadLine()
-		if err  == io.EOF {
+		if err == io.EOF {
 			break
 		} else if err != nil {
 			log.Fatal(err)
@@ -289,20 +284,18 @@ func getViewOutput(host string, path string, model unutil.Model) string {
 /**
   Unkarの板Viewの出力を取得する
   @param boardName 板名
-         threadNo スレッド番号
-         model モデル
+  @param threadNo スレッド番号
+  @param model モデル
   @return HTML出力文字列
 */
 func GetBoardViewOutput(boardName string, threadNo int64, attr string, model unutil.Model) string {
 	// ホスト
-	var host string = "/r"
+	host := "/r"
 	// パス
-	var path string = "/" + boardName + "/" + fmt.Sprintf("%d", threadNo)
+	path := "/" + boardName + "/" + fmt.Sprintf("%d", threadNo)
 	if attr != "" {
 		path += "/" + attr
 	}
-	
+
 	return getViewOutput(host, path, model)
 }
-
-

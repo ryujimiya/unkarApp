@@ -6,10 +6,10 @@ import (
 	"../../util/kill"
 	"errors"
 	"os"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
-	"strconv"
 )
 
 const (
@@ -161,7 +161,7 @@ func (vt *ViewThreadBox) SetThread(item ViewThreadItem) {
 func (vt *ViewThreadBox) GetThreadList(start, end int) (ret []ViewThreadItem) {
 	max := unutil.MinUintV64(uint64(end), VIEW_THREAD_LIST_SIZE, atomic.LoadUint64(&vt.c))
 	if uint64(start) < max {
-		ret = make([]ViewThreadItem, max - uint64(start))
+		ret = make([]ViewThreadItem, max-uint64(start))
 
 		vt.RLock()
 		copy(ret, vt.l[start:])

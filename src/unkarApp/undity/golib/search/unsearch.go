@@ -239,7 +239,7 @@ func (s *Search) createQuery() string {
 		s.ql.Order,
 		page_start,
 		s.param_page_value)
-	fmt.Print(sql) //DEBUG
+	fmt.Print(sql)     //DEBUG
 	fmt.Printf("\r\n") //DEBUG
 	return sql
 }
@@ -321,7 +321,7 @@ func (in *Insert) Push(it *DBItem) {
 			sqlEscape(it.Title),
 			sqlEscape(it.Master),
 			it.Resnum)
-		fmt.Print(query) // DEBUG
+		fmt.Print(query)   // DEBUG
 		fmt.Printf("\r\n") // DEBUG
 		in.ql = append(in.ql, query)
 		if len(in.ql) >= in.bs {
@@ -342,7 +342,7 @@ func (in *Insert) Exec() {
 		}
 		if in.db != nil {
 			query := "INSERT INTO " + DB_TABLE + " (board,number,title,master,resnum) VALUES" + strings.Join(in.ql, ", ")
-			fmt.Print(query) // DEBUG
+			fmt.Print(query)   // DEBUG
 			fmt.Printf("\r\n") // DEBUG
 			in.db.Exec(query)
 		}
@@ -375,7 +375,7 @@ func (u *Update) Update(board, thread string, resnum int) {
 			resnum,
 			board,
 			thread)
-		fmt.Print(query) // DEBUG
+		fmt.Print(query)   // DEBUG
 		fmt.Printf("\r\n") // DEBUG
 		u.db.Exec(query)
 	}
@@ -423,10 +423,10 @@ func sqlEscape(s string) string {
 func connect(conn, idle int) (*sql.DB, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", DB_USER, DB_PASS, DB_HOST, DB_NAME))
 	fmt.Printf("connect\r\n") //DEBUG
-	fmt.Print(db) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
-	fmt.Print(err) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Print(db)             // DEBUG
+	fmt.Printf("\r\n")        // DEBUG
+	fmt.Print(err)            // DEBUG
+	fmt.Printf("\r\n")        // DEBUG
 	if err == nil {
 		db.SetMaxOpenConns(conn)
 		db.SetMaxIdleConns(idle)

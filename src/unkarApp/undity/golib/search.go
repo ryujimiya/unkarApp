@@ -1,9 +1,9 @@
 package untidy
 
 import (
+	"./get2ch"
 	"./search"
 	"./util"
-	"./get2ch"
 	"bufio"
 	"bytes"
 	"fmt"

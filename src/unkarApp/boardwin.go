@@ -3,7 +3,7 @@ package main
 import (
 	"./undity"
 	"./undity/golib/model"
-	"./undity/golib/util"
+	//"./undity/golib/util"
 	"errors"
 	"fmt"
 	"log"
@@ -31,6 +31,8 @@ type BoardWin struct {
 	listBoxThread *walk.ListBox
 	// 板名
 	boardName string
+	// 板タイトル
+	boardTitle string
 	// スレッド一覧モデル
 	threadListModel *ThreadListModel
 }
@@ -62,8 +64,9 @@ type BoardWinModel struct {
 
 /**
  * コンストラクタ
- * @param なし
- * @return (1)メインウィンドウ
+ * @param parentWin 親ウィンドウ
+ * @param boardName URLに含まれる板名(povertyなど)
+ * @return (1)板ウィンドウ
  *         (2)エラー
  */
 func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
@@ -80,10 +83,12 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 	// モデルの生成
 	boardWin.threadListModel = NewThreadListModel(boardName, boardWinModel.SortAttrStr)
 
+	boardWin.boardTitle = boardWin.threadListModel.boardTitle
+
 	// メインウィンドウのウィンドウ生成
 	err := MainWindow{
 		AssignTo: &boardWin.MainWindow,
-		Title:    "Unkar App",
+		Title:    boardWin.boardTitle + " - " + AppName + " " + Version,
 		//MinSize:	Size{600, 400},
 		MinSize: Size{600, 800},
 		Layout:  VBox{},
@@ -92,7 +97,7 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 			AutoSubmit: true,
 			OnSubmitted: func() {
 				//fmt.Println("DataBinder::OnSubmitted start\r\n")
-				fmt.Println(boardWinModel)
+				//fmt.Println(boardWinModel)
 
 				// モデルの生成
 				boardWin.threadListModel = NewThreadListModel(boardWin.boardName, boardWinModel.SortAttrStr)
@@ -196,14 +201,14 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
  * @return なし
  */
 func (boardWin *BoardWin) listBoxThreadCurrentIndexChanged() {
-	i := boardWin.listBoxThread.CurrentIndex()
-	item := &boardWin.threadListModel.items[i]
+	//i := boardWin.listBoxThread.CurrentIndex()
+	//item := &boardWin.threadListModel.items[i]
 
-	name := item.name
-	value := item.value
-	fmt.Println("CurrentIndex: ", i)
-	fmt.Println("name: ", name)
-	fmt.Println("value: ", value)
+	//name := item.name
+	//value := item.value
+	//fmt.Println("CurrentIndex: ", i)
+	//fmt.Println("name: ", name)
+	//fmt.Println("value: ", value)
 }
 
 /**
@@ -215,18 +220,16 @@ func (boardWin *BoardWin) listBoxThreadItemActivated() {
 	i := boardWin.listBoxThread.CurrentIndex()
 	item := &boardWin.threadListModel.items[i]
 
-	name := item.name
+	//name := item.name
 	value := item.value
-	fmt.Println(name)
+	//fmt.Println(name)
 	//fmt.Println(value)
-	fmt.Println("Num=", value.Num)
-	fmt.Println("Res=", value.Res)
-	fmt.Println("Thread=", value.Thread)
-	fmt.Println("Sin=", value.Sin)
-	fmt.Println("Since=", value.Since)
-	fmt.Println("Spd=", value.Spd)
-
-	//walk.MsgBox(boardWin, "Name", name, walk.MsgBoxIconInformation)
+	//fmt.Println("Num=", value.Num)
+	//fmt.Println("Res=", value.Res)
+	//fmt.Println("Thread=", value.Thread)
+	//fmt.Println("Sin=", value.Sin)
+	//fmt.Println("Since=", value.Since)
+	//fmt.Println("Spd=", value.Spd)
 
 	//model := unkarstub.GetThreadModel(boardWin.boardName, value.Sin)
 	//fmt.Println(model)
@@ -262,18 +265,19 @@ type ThreadListModel struct {
 	walk.ListModelBase
 	// アイテム一覧
 	items []ThreadListItem
+	// 板タイトル
+	boardTitle string
 }
 
 /**
  * コンストラクタ
+ * @param boardName
+ * @param sortAttrStr
+ * @return スレッドリストモデル
  */
 func NewThreadListModel(boardName string, sortAttrStr string) *ThreadListModel {
-	// unutilのモデル
-	var unutilModel unutil.Model
-	var attr string
-
 	// 板のモデルを取得する
-	unutilModel = unkarstub.GetBoardModel(boardName)
+	unutilModel := unkarstub.GetBoardModel(boardName)
 
 	// DEBUG
 	fmt.Printf("url=%s\r\n", unutilModel.GetUrl())
@@ -281,27 +285,7 @@ func NewThreadListModel(boardName string, sortAttrStr string) *ThreadListModel {
 	fmt.Printf("className=%s\r\n", unutilModel.GetClassName())
 	fmt.Printf("server=%s\r\n", unutilModel.GetServer())
 
-	/*
-		//////////////////////////////////////////
-		// "sp"
-		// "勢い順↓"
-		// "sp2":
-		// "勢い順↑"
-		// "si":
-		// "時間順↓"
-		// "si2":
-		// "時間順↑"
-		// "re":
-		// "レス数順↓"
-		// "re2":
-		// "レス数順↑"
-		// "":
-		// "番号順↑"
-		// "no":
-		// "番号順↓"
-		attr = "sp"
-	*/
-	attr = sortAttrStr
+	attr := sortAttrStr
 	nowData := unutilModel.GetData()
 	sort, dir := unmodel.BoardSort(unutilModel, attr)
 	fmt.Printf("sort=\r\n")
@@ -320,7 +304,10 @@ func NewThreadListModel(boardName string, sortAttrStr string) *ThreadListModel {
 	//////////////////////////////////////////
 
 	// リストボックスのモデルを生成
-	model := &ThreadListModel{items: make([]ThreadListItem, len(*list))}
+	model := &ThreadListModel{
+		items:      make([]ThreadListItem, len(*list)),
+		boardTitle: unutilModel.GetTitle(),
+	}
 	for i, thread := range *list {
 		// DEBUG
 		//fmt.Println("thread=", thread)

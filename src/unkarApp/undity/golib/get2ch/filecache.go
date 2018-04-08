@@ -2,12 +2,12 @@ package get2ch
 
 import (
 	"../util"
+	"fmt" // DEBUG
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"time"
-	"fmt" // DEBUG
 )
 
 const (
@@ -54,15 +54,13 @@ func (fc FileCache) Path(s, b, t string) string {
 func (fc FileCache) GetData(s, b, t string) ([]byte, error) {
 	fmt.Printf("FileCache::GetData: s=%s b=%s t=%s\r\n", s, b, t) // DEBUG
 	logfile := fc.Path(s, b, t)
-	fmt.Print(logfile) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Printf("%s\r\n", logfile) // DEBUG
 	return ioutil.ReadFile(logfile)
 }
 func (fc FileCache) GetDataRC(s, b, t string) (io.ReadCloser, error) {
 	fmt.Printf("FileCache::GetDataRC: s=%s b=%s t=%s\r\n", s, b, t) // DEBUG
 	logfile := fc.Path(s, b, t)
-	fmt.Print(logfile) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Printf("%s\r\n", logfile) // DEBUG
 	rc, err := os.Open(logfile)
 	if err != nil {
 		fmt.Printf("failed\r\n") // DEBUG
@@ -75,8 +73,7 @@ func (fc FileCache) GetDataRC(s, b, t string) (io.ReadCloser, error) {
 func (fc FileCache) SetData(s, b, t string, d []byte) error {
 	fmt.Printf("FileCache::SetData: s=%s b=%s t=%s\r\n", s, b, t) // DEBUG
 	logfile := fc.Path(s, b, t)
-	fmt.Print(logfile) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Printf("%s\r\n", logfile) // DEBUG
 	os.MkdirAll(path.Dir(logfile), 0777)
 	return ioutil.WriteFile(logfile, d, 0777)
 }
@@ -84,8 +81,7 @@ func (fc FileCache) SetData(s, b, t string, d []byte) error {
 func (fc FileCache) SetDataAppend(s, b, t string, d []byte) error {
 	fmt.Printf("FileCache::SetDataAppend: s=%s b=%s t=%s\r\n", s, b, t) // DEBUG
 	logfile := fc.Path(s, b, t)
-	fmt.Print(logfile) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Printf("%s\r\n", logfile) // DEBUG
 	fp, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0777)
 	if err != nil {
 		fmt.Printf("failed\r\n") // DEBUG

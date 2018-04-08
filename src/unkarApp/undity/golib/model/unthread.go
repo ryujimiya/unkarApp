@@ -9,11 +9,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	//"bufio"
 	"bytes"
+	"fmt" // DEBUG
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-	"fmt" // DEBUG
 )
 
 const (
@@ -180,15 +180,13 @@ func (th *Thread) analyzeData() {
 	data := th.g2ch.GetData()
 	if th.g2ch.GetError() != nil {
 		th.err = th.g2ch.GetError()
-		fmt.Println("th.err=")
-		fmt.Println(th.err)
+		fmt.Printf("th.err=%+v\r\n", th.err)
 		return
 	}
 	th.mod = th.g2ch.GetModified()
 	// dat落ち確認
 	th.data.DatFall = th.mod.After(time.Now())
-	fmt.Println("th.data.DatFall=")
-	fmt.Println(th.data.DatFall)
+	fmt.Println("th.data.DatFall=%+v\r\n", th.data.DatFall)
 
 	ankerNumberColor := func(matchstr string) string {
 		match := RegsRes.FindStringSubmatch(matchstr)
@@ -306,7 +304,7 @@ func (th *Thread) analyzeData() {
 
 	r := unutil.ShiftJISToUtf8Reader(bytes.NewReader(data))
 	/*
-	scanner := bufio.NewScanner(unutil.StripTagReader(r, get2ch.HtmlTag))
+		scanner := bufio.NewScanner(unutil.StripTagReader(r, get2ch.HtmlTag))
 	*/
 
 	/*2015-3-14 2ch新仕様対応で削除
@@ -324,7 +322,7 @@ func (th *Thread) analyzeData() {
 		line = RegsHttp.ReplaceAllStringFunc(line, url_callback)
 		// 画像リンク処理
 		line = RegsSssp.ReplaceAllString(line, `<img src="http${1}" alt="${2}">`)
-		// 
+		//
 		line = RegsBe.ReplaceAllString(line, ` <a href="http://be.2ch.net/test/p.php?i=${1}" target="_blank" rel="nofollow">?${2}</a>`)
 		// アンカー番号処理
 		line = RegsRes.ReplaceAllStringFunc(line, ankerNumberColor)
@@ -360,16 +358,16 @@ func (th *Thread) analyzeData() {
 	*/
 
 	reslist := make([]ResItem, 1) // 先頭要素は空にする
-	threadTitleStr :=  ""
+	threadTitleStr := ""
 	doc, err := goquery.NewDocumentFromReader(r)
 	if err != nil {
-		fmt.Print("url scarapping failed")
+		fmt.Print("url scraping failed\r\n")
 	}
 	doc.Find("title").Each(func(_ int, s *goquery.Selection) {
 		threadTitleStr = s.Text()
 	})
 	fmt.Printf("threadTitleStr=" + threadTitleStr)
-	doc.Find(".post").Each(func(_ int, s* goquery.Selection) {
+	doc.Find(".post").Each(func(_ int, s *goquery.Selection) {
 		//threadNum := s.Find(".number").Text()
 		handleName := s.Find(".name").Find("a").Text()
 		if handleName == "" {
@@ -386,9 +384,9 @@ func (th *Thread) analyzeData() {
 		messageStr = strings.Replace(messageStr, "\n", "", -1)
 		messageStr = strings.Replace(messageStr, "<br/>", "\r\n", -1)
 		messageStr = RegsImgTag5chIcon.ReplaceAllString(messageStr, `https:${1} `) // アイコン対応
-		messageStr = RegsHtmlTag.ReplaceAllString(messageStr, "") // HTMLタグ削除
-		messageStr = RegsImgurBlank.ReplaceAllString(messageStr, `imgur.com`) // im gur.com対応
-		
+		messageStr = RegsHtmlTag.ReplaceAllString(messageStr, "")                  // HTMLタグ削除
+		messageStr = RegsImgurBlank.ReplaceAllString(messageStr, `imgur.com`)      // im gur.com対応
+
 		//fmt.Printf("threadNum=" + threadNum + "\r\n")
 		//fmt.Printf("handleName=" + handleName + "\r\n")
 		//fmt.Printf("emailStr=" + emailStr + "\r\n")
@@ -403,7 +401,7 @@ func (th *Thread) analyzeData() {
 		messageStr = RegsHttp.ReplaceAllStringFunc(messageStr, url_callback)
 		// 画像リンク処理
 		messageStr = RegsSssp.ReplaceAllString(messageStr, `<img src="http${1}" alt="${2}">`)
-		// 
+		//
 		messageStr = RegsBe.ReplaceAllString(messageStr, ` <a href="http://be.2ch.net/test/p.php?i=${1}" target="_blank" rel="nofollow">?${2}</a>`)
 		// アンカー番号処理
 		messageStr = RegsRes.ReplaceAllStringFunc(messageStr, ankerNumberColor)
@@ -416,7 +414,7 @@ func (th *Thread) analyzeData() {
 		tmpdataarray[2] = dateStr
 		tmpdataarray[3] = messageStr
 		tmpdataarray[4] = ""
-		if (resNo == 1) {
+		if resNo == 1 {
 			tmpdataarray[4] = threadTitleStr
 		}
 		tmpdata := ResItem{}
@@ -432,10 +430,9 @@ func (th *Thread) analyzeData() {
 		}
 
 		reslist = append(reslist, tmpdata)
-		
+
 		resNo++
 	})
-	
 
 	// タイトル設定
 	th.title = string(unutil.StripTags([]byte(reslist[1].Data[4]), get2ch.HtmlTag))

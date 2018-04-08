@@ -606,7 +606,7 @@ unkarl.resPop.prototype.mouseEventAnalyze_ = function(e, elm){
 			if(url !== emptyString){
 				this.popobj.append('nico2' + line[1], '<iframe width="312" height="176" src="' + url + '" style="border:none;"></iframe>');
 			}
-		} else if(!elm.getAttribute('data-imglink')){
+		} /*else if(!elm.getAttribute('data-imglink')){
 			elm.setAttribute('data-imglink', '1');
 			href = elm.href;
 			if(unkarl.regs.image_ext.test(href)){
@@ -628,6 +628,7 @@ unkarl.resPop.prototype.mouseEventAnalyze_ = function(e, elm){
 				}
 			}
 		}
+		*/
 	}
 };
 

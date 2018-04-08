@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"errors"
+	"fmt" // DEBUG
 	"io"
 	"io/ioutil"
 	"net"
@@ -16,11 +17,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"fmt" // DEBUG
 )
 
 const (
-	CONF_FOLDER      = "./2ch/dat"     // dat保管フォルダ名
+	CONF_FOLDER      = "./2ch/dat"    // dat保管フォルダ名
 	CONF_ITAURL_HOST = "menu.2ch.net" // 板情報取得URL
 	CONF_ITAURL_FILE = "bbsmenu.html"
 	BOURBON_HOST     = "bg20.2ch.net" // 2chキャッシュサーバ
@@ -243,14 +243,14 @@ func (g2ch *Get2ch) GetData() (data []byte) {
 			//mod_limit := g2ch.req_time.Add(-1 * DAT_NOT_RENEW_SEC)
 			//tnumber, _ := strconv.ParseInt(g2ch.thread, 10, 64)
 			//if time.Unix(tnumber, 0).After(mod_limit) && g2ch.boardThreadLookup() {
-				// 期間内に立てられている
-				// また、スレッド一覧に記載がある場合
-				// 通常取得
-				if g2ch.bourbon {
-					data = g2ch.bourbonData()
-				} else {
-					data = g2ch.normalData(true)
-				}
+			// 期間内に立てられている
+			// また、スレッド一覧に記載がある場合
+			// 通常取得
+			if g2ch.bourbon {
+				data = g2ch.bourbonData()
+			} else {
+				data = g2ch.normalData(true)
+			}
 			//} else {
 			//	data = g2ch.dataErrorDat()
 			//	if g2ch.bourbon == false {
@@ -385,8 +385,7 @@ func getHttpBBSmenu(cache Cache) (rc io.ReadCloser, mod time.Time, err error) {
 	}
 	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("Connection", "close")
-	fmt.Print(req) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Print("%+v\r\n", req) // DEBUG
 	resp, doerr := client.Do(req)
 	if doerr != nil {
 		return nil, mod, doerr
@@ -607,8 +606,7 @@ func (g2ch *Get2ch) getSettingFile() ([]byte, error) {
 	req.Header.Set("User-Agent", USER_AGENT)
 	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("Connection", "close")
-	fmt.Print(req) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Print("%+v\r\n", req) // DEBUG
 
 	resp, doerr := client.Do(req)
 	if doerr != nil {
@@ -692,8 +690,8 @@ func (g2ch *Get2ch) request(flag bool) (data []byte) {
 		//// dat取得用header生成
 		//req, err = http.NewRequest("GET", "http://"+server+"/"+board+"/dat/"+thread+".dat", nil)
 		// 2015-3-14 2ch新仕様対応
-		fmt.Printf("get thread html of 2ch directly:\r\n") // DEBUG
-		fmt.Printf("https://"+server+"/test/read.cgi/"+board+"/"+thread+"/\r\n") // DEBUG
+		fmt.Printf("get thread html of 2ch directly:\r\n")                                   // DEBUG
+		fmt.Printf("https://" + server + "/test/read.cgi/" + board + "/" + thread + "/\r\n") // DEBUG
 		req, err = http.NewRequest("GET", "https://"+server+"/test/read.cgi/"+board+"/"+thread+"/", nil)
 		if err != nil {
 			return
@@ -760,8 +758,7 @@ func (g2ch *Get2ch) request(flag bool) (data []byte) {
 		return
 	}
 	req.Header.Set("Connection", "close")
-	fmt.Print(req) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Print("%+v\r\n", req) // DEBUG
 
 	// リクエスト送信
 	var resp *http.Response
@@ -822,7 +819,7 @@ func (g2ch *Get2ch) request(flag bool) (data []byte) {
 }
 
 func (g2ch *Get2ch) bourbonRequest() (data []byte) {
-	fmt.Printf("Get2ch::bourbonRequest\r\n");
+	fmt.Printf("Get2ch::bourbonRequest\r\n")
 	select {
 	case parallelRequestLimitCh <- struct{}{}:
 		// 同時実行数制限
@@ -867,8 +864,7 @@ func (g2ch *Get2ch) bourbonRequest() (data []byte) {
 	req.Header.Set("User-Agent", USER_AGENT)
 	req.Header.Set("Accept-Encoding", "gzip")
 	req.Header.Set("Connection", "close")
-	fmt.Print(req) // DEBUG
-	fmt.Printf("\r\n") // DEBUG
+	fmt.Print("%+v\r\n", req) // DEBUG
 
 	// リクエスト送信
 	var resp *http.Response

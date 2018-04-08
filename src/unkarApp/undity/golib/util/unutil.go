@@ -9,12 +9,12 @@ import (
 	//"code.google.com/p/go.net/html"
 	//"code.google.com/p/go.net/html/atom"
 	//"code.google.com/p/mahonia"
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
-	"github.com/cypro666/mahonia"
 	"compress/flate"
 	"compress/gzip"
 	"fmt"
+	"github.com/cypro666/mahonia"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"hash/fnv"
 	"io"
 	"io/ioutil"
@@ -471,7 +471,7 @@ func CheckNotModified(r *http.Request, mod time.Time) {
 		data := GetIfModifiedSince(r)
 		inm := GetIfNoneMatch(r)
 		etag := CreateETag(mod)
-		if mod.Before(data.Add(1 * time.Second)) || etag == inm || inm == "*" {
+		if mod.Before(data.Add(1*time.Second)) || etag == inm || inm == "*" {
 			// 更新なし or ETagが同じ
 			panic(&Output{
 				Code: http.StatusNotModified,

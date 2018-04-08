@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	Version = "1.0.0.1"
+	AppName = "unkarApp"
+	Version = "1.0.0.2"
 )
 
 ////////////////////////////////////////////////////////////
@@ -63,7 +64,7 @@ func NewMainWin() (*MainWin, error) {
 	// メインウィンドウのウィンドウ生成
 	err := MainWindow{
 		AssignTo: &mainWin.MainWindow,
-		Title:    "Unkar App " + Version,
+		Title:    AppName + " " + Version,
 		MinSize:  Size{600, 400},
 		Layout:   VBox{},
 		Children: []Widget{
@@ -155,15 +156,12 @@ type BoardListModel struct {
  * コンストラクタ
  */
 func NewBoardListModel() *BoardListModel {
-	// Unkarのサーバー一覧
-	var serverList []unkarstub.ServerItem
 	// Unkarの板一覧（全体）
 	var boardListAll []unkarstub.BoardItem
 
+	// Unkarのサーバー一覧
 	// サーバー一覧を取得する
-	serverList = unkarstub.UnkarIndexMain()
-	// ボード一覧
-	//boardListAll = make([]unkarstub.BoardItem, 0)
+	serverList := unkarstub.UnkarIndexMain()
 
 	for _, server := range serverList {
 		// サーバーの板一覧の取得

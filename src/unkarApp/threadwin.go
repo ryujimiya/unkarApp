@@ -158,8 +158,6 @@ func (threadWin *ThreadWin) webView_NavigateComplete2(pDisp *win.IDispatch, url 
 	if url != nil && url.BstrVal() != nil {
 		fmt.Printf("  url = %+v\r\n", win.BSTRToString(url.BstrVal()))
 	}
-
-	threadWin.fileCreate = true
 }
 
 func (threadWin *ThreadWin) webView_DownloadBegin() {
@@ -184,7 +182,7 @@ func (threadWin *ThreadWin) webView_DownloadBegin() {
 
 		threadWin.fileCreate = false
 	} else {
-		
+		threadWin.fileCreate = true
 	}
 }
 
@@ -226,8 +224,6 @@ func (threadWin *ThreadWin) webView_NavigateError(
 	if cancel != nil {
 		fmt.Printf("  *cancel = %+v\r\n", *cancel)
 	}
-
-	threadWin.fileCreate = true
 }
 
 func (threadWin *ThreadWin) webView_NewWindow3(

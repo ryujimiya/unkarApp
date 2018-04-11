@@ -85,10 +85,14 @@ func NewBoardWin(parentWin walk.Form, boardName string) (*BoardWin, error) {
 
 	boardWin.boardTitle = boardWin.threadListModel.boardTitle
 
+	// アイコン
+	icon := GetApplicationIcon()
+
 	// メインウィンドウのウィンドウ生成
 	err := MainWindow{
 		AssignTo: &boardWin.MainWindow,
 		Title:    boardWin.boardTitle + " - " + AppName + " " + Version,
+		Icon:     icon,
 		//MinSize:	Size{600, 400},
 		MinSize: Size{600, 800},
 		Layout:  VBox{},

@@ -8,7 +8,6 @@ import (
 	"strings"
 	//"log"
 	"os"
-	"path/filepath"
 )
 
 import (
@@ -62,6 +61,9 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	// スレッド番号の格納
 	threadWin.threadNo = threadNo
 
+	// アイコン
+	icon := GetApplicationIcon()
+
 	threadWin.url = ""
 	threadWin.fileCreate = true
 
@@ -80,6 +82,7 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	err := MainWindow{
 		AssignTo: &threadWin.MainWindow,
 		Title:    "",
+		Icon:     icon,
 		MinSize:  Size{850, 600},
 		Layout:   VBox{},
 		Children: []Widget{
@@ -167,13 +170,13 @@ func (threadWin *ThreadWin) webView_DownloadBegin() {
 		//fmt.Printf("%+v\r\n", threadWin.url)
 		//fmt.Printf("%+v\r\n", threadWin.threadPageFilepath)
 		// スレッドページだったらファイルを作成する
-		// NOTE: threadWin.urlが c:\と小文字で始まっている GetTmpHtmlDirの問題だと思われる
-		//       そのためurlを直接比較せず、ファイル名で比較している
-		//       ファイル名はかなりユニークなのでこれでもOK
-		if filepath.Base(threadWin.url) == filepath.Base(threadWin.threadPageFilepath) {
+		// NOTE: threadWin.urlが c:\と小文字で始まる現象
+		//       ⇒コマンドプロンプト上で実行したときの問題
+		//         cd c:\とすると発生する
+		if strings.ToLower(threadWin.url) == strings.ToLower(threadWin.threadPageFilepath) {
 			// HTMLファイルを作成
 			threadWin.createHtmlFile()
-			
+
 			// このイベントが発生するときはすでにダウンロードが始まっているらしい
 			// 作成したHTMLファイルが表示に反映されない
 			// 仕方ないので再度更新する

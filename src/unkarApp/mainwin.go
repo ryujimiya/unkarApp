@@ -16,8 +16,21 @@ import (
 
 const (
 	AppName = "unkarApp"
-	Version = "1.0.0.2"
+	Version = "1.0.0.3"
 )
+
+/**
+ *  アプリケーションのアイコン
+ */
+func GetApplicationIcon() *walk.Icon {
+	// アイコン
+	//icon, iconErr := walk.Resources.Icon("unkarApp.ico")
+	icon, iconErr := walk.Resources.Icon("3")
+	if iconErr != nil {
+		//log.Fatal(iconErr)
+	}
+	return icon
+}
 
 ////////////////////////////////////////////////////////////
 // MainWin
@@ -61,10 +74,14 @@ func NewMainWin() (*MainWin, error) {
 	// モデルの生成
 	mainWin.boardListModel = NewBoardListModel()
 
+	// アイコン
+	icon := GetApplicationIcon()
+
 	// メインウィンドウのウィンドウ生成
 	err := MainWindow{
 		AssignTo: &mainWin.MainWindow,
 		Title:    AppName + " " + Version,
+		Icon:     icon,
 		MinSize:  Size{600, 400},
 		Layout:   VBox{},
 		Children: []Widget{

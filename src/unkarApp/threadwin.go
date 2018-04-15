@@ -13,7 +13,6 @@ import (
 import (
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
-	"github.com/lxn/win"
 )
 
 ////////////////////////////////////////////////////////////
@@ -87,17 +86,17 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 		Layout:   VBox{},
 		Children: []Widget{
 			WebView{
-				AssignTo:           &threadWin.webView,
-				Name:               "スレッド",
-				URL:                threadWin.threadPageUrl,
-				ShortcutsEnabled:   true,
-				ContextMenuEnabled: true,
-				BeforeNavigate2:    threadWin.webView_BeforeNavigate2,
-				NavigateComplete2:  threadWin.webView_NavigateComplete2,
-				DownloadBegin:      threadWin.webView_DownloadBegin,
-				DocumentComplete:   threadWin.webView_DocumentComplete,
-				NavigateError:      threadWin.webView_NavigateError,
-				NewWindow3:         threadWin.webView_NewWindow3,
+				AssignTo:                 &threadWin.webView,
+				Name:                     "スレッド",
+				URL:                      threadWin.threadPageUrl,
+				ShortcutsEnabled:         true,
+				NativeContextMenuEnabled: true,
+				OnNavigating:             threadWin.webView_OnNavigating,
+				OnNavigated:              threadWin.webView_OnNavigated,
+				OnDownloading:            threadWin.webView_OnDownloading,
+				OnDocumentCompleted:      threadWin.webView_OnDocumentCompleted,
+				OnNavigatedError:         threadWin.webView_OnNavigatedError,
+				OnNewWindow:              threadWin.webView_OnNewWindow,
 			},
 		},
 	}.Create()
@@ -111,60 +110,28 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	return threadWin, err
 }
 
-func (threadWin *ThreadWin) webView_BeforeNavigate2(
-	pDisp *win.IDispatch,
-	url *win.VARIANT,
-	flags *win.VARIANT,
-	targetFrameName *win.VARIANT,
-	postData *win.VARIANT,
-	headers *win.VARIANT,
-	cancel *win.VARIANT_BOOL) {
+func (threadWin *ThreadWin) webView_OnNavigating(arg *walk.WebViewNavigatingArg) {
+	fmt.Printf("webView_OnNavigating\r\n")
+	fmt.Printf("Url = %+v\r\n", arg.Url())
+	fmt.Printf("Flags = %+v\r\n", arg.Flags())
+	fmt.Printf("Headers = %+v\r\n", arg.Headers())
+	fmt.Printf("TargetFrameName = %+v\r\n", arg.TargetFrameName())
+	fmt.Printf("Cancel = %+v\r\n", arg.Cancel())
+	// if you want to cancel
+	//arg.SetCancel(true)
 
-	fmt.Printf("webView_BeforeNavigate2\r\n")
-	fmt.Printf("pDisp = %+v\r\n", pDisp)
-	fmt.Printf("url = %+v\r\n", url)
-	if url != nil && url.BstrVal() != nil {
-		fmt.Printf("  url = %+v\r\n", win.BSTRToString(url.BstrVal()))
-	}
-	fmt.Printf("flags = %+v\r\n", flags)
-	if flags != nil {
-		fmt.Printf("    flags = %+v\r\n", flags.LVal())
-	}
-	fmt.Printf("targetFrameName = %+v\r\n", targetFrameName)
-	if targetFrameName != nil && targetFrameName.BstrVal() != nil {
-		fmt.Printf("  targetFrameName = %+v\r\n", win.BSTRToString(targetFrameName.BstrVal()))
-	}
-	fmt.Printf("postData = %+v\r\n", postData)
-	if postData != nil {
-		fmt.Printf("    postData = %+v\r\n", postData.PVarVal())
-	}
-	fmt.Printf("headers = %+v\r\n", headers)
-	if headers != nil && headers.BstrVal() != nil {
-		fmt.Printf("  headers = %+v\r\n", win.BSTRToString(headers.BstrVal()))
-	}
-	fmt.Printf("cancel = %+v\r\n", cancel)
-	if cancel != nil {
-		fmt.Printf("  *cancel = %+v\r\n", *cancel)
-	}
-
-	if url != nil && url.BstrVal() != nil {
-		// URLを格納する
-		// このURLはfile:///C:/でなくC:\ で渡ってくるので注意
-		threadWin.url = win.BSTRToString(url.BstrVal())
-	}
+	// URLを格納する
+	// このURLはfile:///C:/でなくC:\ で渡ってくるので注意
+	threadWin.url = arg.Url()
 }
 
-func (threadWin *ThreadWin) webView_NavigateComplete2(pDisp *win.IDispatch, url *win.VARIANT) {
-	fmt.Printf("webView_NavigateComplete2\r\n")
-	fmt.Printf("pDisp = %+v\r\n", pDisp)
-	fmt.Printf("url = %+v\r\n", url)
-	if url != nil && url.BstrVal() != nil {
-		fmt.Printf("  url = %+v\r\n", win.BSTRToString(url.BstrVal()))
-	}
+func (threadWin *ThreadWin) webView_OnNavigated(arg *walk.WebViewNavigatedEventArg) {
+	fmt.Printf("webView_OnNavigated\r\n")
+	fmt.Printf("Url = %+v\r\n", arg.Url())
 }
 
-func (threadWin *ThreadWin) webView_DownloadBegin() {
-	fmt.Printf("webView_DownloadBegin\r\n")
+func (threadWin *ThreadWin) webView_OnDownloading() {
+	fmt.Printf("webView_OnDownloading\r\n")
 
 	if threadWin.fileCreate {
 		//fmt.Printf("%+v\r\n", threadWin.url)
@@ -189,71 +156,33 @@ func (threadWin *ThreadWin) webView_DownloadBegin() {
 	}
 }
 
-func (threadWin *ThreadWin) webView_DownloadComplete() {
-	fmt.Printf("webView_DownloadComplete\r\n")
+func (threadWin *ThreadWin) webView_OnDownloaded() {
+	fmt.Printf("webView_OnDownloaded\r\n")
 }
 
-func (threadWin *ThreadWin) webView_DocumentComplete(pDisp *win.IDispatch, url *win.VARIANT) {
-	fmt.Printf("webView_DocumentComplete\r\n")
-	fmt.Printf("pDisp = %+v\r\n", pDisp)
-	fmt.Printf("url = %+v\r\n", url)
-	if url != nil && url.BstrVal() != nil {
-		fmt.Printf("  url = %+v\r\n", win.BSTRToString(url.BstrVal()))
-	}
+func (threadWin *ThreadWin) webView_OnDocumentCompleted(arg *walk.WebViewDocumentCompletedEventArg) {
+	fmt.Printf("webView_OnDocumentCompleted\r\n")
+	fmt.Printf("Url = %+v\r\n", arg.Url())
 }
 
-func (threadWin *ThreadWin) webView_NavigateError(
-	pDisp *win.IDispatch,
-	url *win.VARIANT,
-	targetFrameName *win.VARIANT,
-	statusCode *win.VARIANT,
-	cancel *win.VARIANT_BOOL) {
-
-	fmt.Printf("webView_NavigateError\r\n")
-	fmt.Printf("pDisp = %+v\r\n", pDisp)
-	fmt.Printf("url = %+v\r\n", url)
-	if url != nil && url.BstrVal() != nil {
-		fmt.Printf("  url = %+v\r\n", win.BSTRToString(url.BstrVal()))
-	}
-	fmt.Printf("targetFrameName = %+v\r\n", targetFrameName)
-	if targetFrameName != nil && targetFrameName.BstrVal() != nil {
-		fmt.Printf("  targetFrameName = %+v\r\n", win.BSTRToString(targetFrameName.BstrVal()))
-	}
-	fmt.Printf("statusCode = %+v\r\n", statusCode)
-	if statusCode != nil {
-		fmt.Printf("    statusCode = %+v\r\n", statusCode.LVal())
-	}
-	fmt.Printf("cancel = %+v\r\n", cancel)
-	if cancel != nil {
-		fmt.Printf("  *cancel = %+v\r\n", *cancel)
-	}
+func (threadWin *ThreadWin) webView_OnNavigatedError(arg *walk.WebViewNavigatedErrorEventArg) {
+	fmt.Printf("webView_OnNavigatedError\r\n")
+	fmt.Printf("Url = %+v\r\n", arg.Url())
+	fmt.Printf("TargetFrameName = %+v\r\n", arg.TargetFrameName())
+	fmt.Printf("StatusCode = %+v\r\n", arg.StatusCode())
+	fmt.Printf("Cancel = %+v\r\n", arg.Cancel())
+	// if you want to cancel
+	//arg.SetCancel(true)
 }
 
-func (threadWin *ThreadWin) webView_NewWindow3(
-	ppDisp **win.IDispatch,
-	cancel *win.VARIANT_BOOL,
-	dwFlags uint32,
-	bstrUrlContext *uint16,
-	bstrUrl *uint16) {
-
-	fmt.Printf("webView_NewWindow3\r\n")
-	fmt.Printf("ppDisp = %+v\r\n", ppDisp)
-	if ppDisp != nil {
-		fmt.Printf("    *ppDisp = %+v\r\n", *ppDisp)
-	}
-	fmt.Printf("cancel = %+v\r\n", cancel)
-	if cancel != nil {
-		fmt.Printf("  *cancel = %+v\r\n", *cancel)
-	}
-	fmt.Printf("dwFlags = %+v\r\n", dwFlags)
-	fmt.Printf("bstrUrlContext = %+v\r\n", bstrUrlContext)
-	if bstrUrlContext != nil {
-		fmt.Printf("  bstrUrlContext = %+v\r\n", win.BSTRToString(bstrUrlContext))
-	}
-	fmt.Printf("bstrUrl = %+v\r\n", bstrUrl)
-	if bstrUrl != nil {
-		fmt.Printf("  bstrUrl = %+v\r\n", win.BSTRToString(bstrUrl))
-	}
+func (threadWin *ThreadWin) webView_OnNewWindow(arg *walk.WebViewNewWindowEventArg) {
+	fmt.Printf("webView_OnNewWindow\r\n")
+	fmt.Printf("Cancel = %+v\r\n", arg.Cancel())
+	fmt.Printf("Flags = %+v\r\n", arg.Flags())
+	fmt.Printf("UrlContext = %+v\r\n", arg.UrlContext())
+	fmt.Printf("Url = %+v\r\n", arg.Url())
+	// if you want to cancel
+	//arg.SetCancel(true)
 }
 
 func (threadWin *ThreadWin) createHtmlFile() {

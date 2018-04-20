@@ -94,6 +94,7 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 				OnNavigating:             threadWin.webView_OnNavigating,
 				OnNavigated:              threadWin.webView_OnNavigated,
 				OnDownloading:            threadWin.webView_OnDownloading,
+				OnDownloaded:             threadWin.webView_OnDownloaded,
 				OnDocumentCompleted:      threadWin.webView_OnDocumentCompleted,
 				OnNavigatedError:         threadWin.webView_OnNavigatedError,
 				OnNewWindow:              threadWin.webView_OnNewWindow,
@@ -110,24 +111,24 @@ func NewThreadWin(parentWin walk.Form, boardName string, threadNo int64) (*Threa
 	return threadWin, err
 }
 
-func (threadWin *ThreadWin) webView_OnNavigating(arg *walk.WebViewNavigatingArg) {
+func (threadWin *ThreadWin) webView_OnNavigating(eventData *walk.WebViewNavigatingEventData) {
 	fmt.Printf("webView_OnNavigating\r\n")
-	fmt.Printf("Url = %+v\r\n", arg.Url())
-	fmt.Printf("Flags = %+v\r\n", arg.Flags())
-	fmt.Printf("Headers = %+v\r\n", arg.Headers())
-	fmt.Printf("TargetFrameName = %+v\r\n", arg.TargetFrameName())
-	fmt.Printf("Cancel = %+v\r\n", arg.Cancel())
+	fmt.Printf("Url = %+v\r\n", eventData.Url())
+	fmt.Printf("Flags = %+v\r\n", eventData.Flags())
+	fmt.Printf("Headers = %+v\r\n", eventData.Headers())
+	fmt.Printf("TargetFrameName = %+v\r\n", eventData.TargetFrameName())
+	fmt.Printf("Canceled = %+v\r\n", eventData.Canceled())
 	// if you want to cancel
-	//arg.SetCancel(true)
+	//eventData.SetCanceled(true)
 
 	// URLを格納する
 	// このURLはfile:///C:/でなくC:\ で渡ってくるので注意
-	threadWin.url = arg.Url()
+	threadWin.url = eventData.Url()
 }
 
-func (threadWin *ThreadWin) webView_OnNavigated(arg *walk.WebViewNavigatedEventArg) {
+func (threadWin *ThreadWin) webView_OnNavigated(url string) {
 	fmt.Printf("webView_OnNavigated\r\n")
-	fmt.Printf("Url = %+v\r\n", arg.Url())
+	fmt.Printf("url = %+v\r\n", url)
 }
 
 func (threadWin *ThreadWin) webView_OnDownloading() {
@@ -160,29 +161,29 @@ func (threadWin *ThreadWin) webView_OnDownloaded() {
 	fmt.Printf("webView_OnDownloaded\r\n")
 }
 
-func (threadWin *ThreadWin) webView_OnDocumentCompleted(arg *walk.WebViewDocumentCompletedEventArg) {
+func (threadWin *ThreadWin) webView_OnDocumentCompleted(url string) {
 	fmt.Printf("webView_OnDocumentCompleted\r\n")
-	fmt.Printf("Url = %+v\r\n", arg.Url())
+	fmt.Printf("url = %+v\r\n", url)
 }
 
-func (threadWin *ThreadWin) webView_OnNavigatedError(arg *walk.WebViewNavigatedErrorEventArg) {
+func (threadWin *ThreadWin) webView_OnNavigatedError(eventData *walk.WebViewNavigatedErrorEventData) {
 	fmt.Printf("webView_OnNavigatedError\r\n")
-	fmt.Printf("Url = %+v\r\n", arg.Url())
-	fmt.Printf("TargetFrameName = %+v\r\n", arg.TargetFrameName())
-	fmt.Printf("StatusCode = %+v\r\n", arg.StatusCode())
-	fmt.Printf("Cancel = %+v\r\n", arg.Cancel())
+	fmt.Printf("Url = %+v\r\n", eventData.Url())
+	fmt.Printf("TargetFrameName = %+v\r\n", eventData.TargetFrameName())
+	fmt.Printf("StatusCode = %+v\r\n", eventData.StatusCode())
+	fmt.Printf("Canceled = %+v\r\n", eventData.Canceled())
 	// if you want to cancel
-	//arg.SetCancel(true)
+	//eventData.SetCanceled(true)
 }
 
-func (threadWin *ThreadWin) webView_OnNewWindow(arg *walk.WebViewNewWindowEventArg) {
+func (threadWin *ThreadWin) webView_OnNewWindow(eventData *walk.WebViewNewWindowEventData) {
 	fmt.Printf("webView_OnNewWindow\r\n")
-	fmt.Printf("Cancel = %+v\r\n", arg.Cancel())
-	fmt.Printf("Flags = %+v\r\n", arg.Flags())
-	fmt.Printf("UrlContext = %+v\r\n", arg.UrlContext())
-	fmt.Printf("Url = %+v\r\n", arg.Url())
+	fmt.Printf("Canceled = %+v\r\n", eventData.Canceled())
+	fmt.Printf("Flags = %+v\r\n", eventData.Flags())
+	fmt.Printf("UrlContext = %+v\r\n", eventData.UrlContext())
+	fmt.Printf("Url = %+v\r\n", eventData.Url())
 	// if you want to cancel
-	//arg.SetCancel(true)
+	//eventData.SetCancel(true)
 }
 
 func (threadWin *ThreadWin) createHtmlFile() {

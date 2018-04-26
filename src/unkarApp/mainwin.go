@@ -2,10 +2,7 @@ package main
 
 import (
 	"./undity"
-	//"./undity/golib/util"
-	//"./undity/golib/model"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -16,7 +13,7 @@ import (
 
 const (
 	AppName = "unkarApp"
-	Version = "1.0.0.3"
+	Version = "1.0.0.4"
 )
 
 /**
@@ -27,7 +24,7 @@ func GetApplicationIcon() *walk.Icon {
 	//icon, iconErr := walk.Resources.Icon("unkarApp.ico")
 	icon, iconErr := walk.Resources.Icon("3")
 	if iconErr != nil {
-		//log.Fatal(iconErr)
+		panic(iconErr)
 	}
 	return icon
 }
@@ -36,15 +33,28 @@ func GetApplicationIcon() *walk.Icon {
 // MainWin
 ////////////////////////////////////////////////////////////
 /**
+ * ページ
+ */
+type Page interface {
+	walk.Container
+	Parent() walk.Container
+	SetParent(parent walk.Container) error
+}
+
+/**
  * メインウィンドウ
  */
 type MainWin struct {
-	// 派生元：Walkメインウィンドウ
 	*walk.MainWindow
-	// 板一覧リストボックス
-	listBoxBoard *walk.ListBox
-	// 板一覧モデル
-	boardListModel *BoardListModel
+	navToolBar    *walk.ToolBar
+	pageActions   []*walk.Action
+	pageComposite *walk.Composite
+	action2Page   map[*walk.Action]Page
+	currPage      Page
+	currAction    *walk.Action
+	topPage       *TopPage
+	boardPage     *BoardPage
+	threadPage    *ThreadPage
 }
 
 /**
@@ -69,10 +79,9 @@ func NewMainWin() (*MainWin, error) {
 	unkarstub.InitUnkar()
 
 	// メインウィンドウ生成
-	mainWin := new(MainWin)
-
-	// モデルの生成
-	mainWin.boardListModel = NewBoardListModel()
+	mainWin := &MainWin{
+		action2Page: make(map[*walk.Action]Page),
+	}
 
 	// アイコン
 	icon := GetApplicationIcon()
@@ -82,139 +91,221 @@ func NewMainWin() (*MainWin, error) {
 		AssignTo: &mainWin.MainWindow,
 		Title:    AppName + " " + Version,
 		Icon:     icon,
-		MinSize:  Size{600, 400},
-		Layout:   VBox{},
+		MinSize:  Size{950, 600},
+		Layout:   HBox{MarginsZero: true, SpacingZero: true},
+		Font:     Font{Family: "MS Shell Dlg 2", PointSize: 12},
 		Children: []Widget{
-			ListBox{
-				AssignTo: &mainWin.listBoxBoard,
-				Model:    mainWin.boardListModel,
-				OnCurrentIndexChanged: mainWin.listBoxBoardCurrentIndexChanged,
-				OnItemActivated:       mainWin.listBoxBoardItemActivated,
+			ScrollView{
+				HorizontalFixed: true,
+				Layout:          VBox{MarginsZero: true},
+				Children: []Widget{
+					Composite{
+						Layout: VBox{MarginsZero: true},
+						Children: []Widget{
+							ToolBar{
+								AssignTo:    &mainWin.navToolBar,
+								Orientation: Vertical,
+								ButtonStyle: ToolBarButtonImageAboveText,
+								MaxTextRows: 2,
+							},
+						},
+					},
+				},
+			},
+			Composite{
+				AssignTo: &mainWin.pageComposite,
+				Name:     "pageComposite",
+				Layout:   HBox{MarginsZero: true, SpacingZero: true},
 			},
 		},
 	}.Create()
 
-	// デフォルトのフォント(walk.Fontのinit関数参照)
-	//font, err:= walk.NewFont("MS Shell Dlg 2", 8, 0x00)
-	// フォントサイズを大きくする
-	font, err := walk.NewFont("MS Shell Dlg 2", 12, 0x00)
+	mainWin.topPage, err = newTopPage(mainWin.pageComposite, mainWin)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	mainWin.listBoxBoard.SetFont(font)
+	mainWin.boardPage, err = newBoardPage(mainWin.pageComposite, mainWin)
+	if err != nil {
+		return nil, err
+	}
+	mainWin.threadPage, err = newThreadPage(mainWin.pageComposite, mainWin)
+	if err != nil {
+		return nil, err
+	}
+	action, err := mainWin.newPageAction("板一覧", "./undity/public_html/img/whiteboard.png")
+	if err != nil {
+		return nil, err
+	}
+	mainWin.action2Page[action] = mainWin.topPage
+	mainWin.pageActions = append(mainWin.pageActions, action)
+
+	action, err = mainWin.newPageAction("板", "./undity/public_html/img/folder.png")
+	if err != nil {
+		return nil, err
+	}
+	mainWin.action2Page[action] = mainWin.boardPage
+	mainWin.pageActions = append(mainWin.pageActions, action)
+
+	action, err = mainWin.newPageAction("スレッド", "./undity/public_html/img/memo.png")
+	if err != nil {
+		return nil, err
+	}
+	mainWin.action2Page[action] = mainWin.threadPage
+	mainWin.pageActions = append(mainWin.pageActions, action)
+
+	mainWin.updateNavigationToolBar()
+
+	if len(mainWin.pageActions) > 0 {
+		if err := mainWin.setCurrentAction(mainWin.pageActions[0]); err != nil {
+			return nil, err
+		}
+	}
 
 	return mainWin, err
 }
 
-/**
- * 板一覧リストボックス選択インデックスが変わった
- * @param なし
- * @return なし
- */
-func (mainWin *MainWin) listBoxBoardCurrentIndexChanged() {
-	i := mainWin.listBoxBoard.CurrentIndex()
-	item := &mainWin.boardListModel.items[i]
-
-	name := item.name
-	value := item.value
-	fmt.Println("CurrentIndex: ", i)
-	fmt.Println("name: ", name)
-	fmt.Println("value: ", value)
-}
-
-/**
- * 板一覧リストボックスアイテムがダブルクリックされた
- * @param なし
- * @return なし
- */
-func (mainWin *MainWin) listBoxBoardItemActivated() {
-	i := mainWin.listBoxBoard.CurrentIndex()
-	item := &mainWin.boardListModel.items[i]
-
-	//name := item.name
-	value := item.value
-	//walk.MsgBox(mainWin, "Name", name, walk.MsgBoxIconInformation)
-	//walk.MsgBox(mainWin, "Value", value, walk.MsgBoxIconInformation)
-
-	// 板ウィンドウの生成
-	boardWin, err := NewBoardWin(mainWin, value)
+func (mainWin *MainWin) newPageAction(title, image string) (*walk.Action, error) {
+	img, err := walk.Resources.Bitmap(image)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	// 表示
-	boardWin.Run()
+
+	action := walk.NewAction()
+	action.SetCheckable(true)
+	action.SetExclusive(true)
+	action.SetImage(img)
+	action.SetText(title)
+
+	action.Triggered().Attach(func() {
+		mainWin.setCurrentAction(action)
+	})
+
+	return action, nil
 }
 
-////////////////////////////////////////////////////////////
-// BoardListItem
-////////////////////////////////////////////////////////////
-/**
- * リストボックスアイテム
- */
-type BoardListItem struct {
-	name  string
-	value string
+func (mainWin *MainWin) setCurrentAction(action *walk.Action) error {
+	defer func() {
+		if !mainWin.pageComposite.IsDisposed() {
+			mainWin.pageComposite.RestoreState()
+			mainWin.pageComposite.Layout().Update(false)
+		}
+	}()
+
+	mainWin.SetFocus()
+
+	if prevPage := mainWin.currPage; prevPage != nil {
+		mainWin.pageComposite.SaveState()
+		prevPage.SetVisible(false)
+		prevPage.SetParent(nil)
+	}
+
+	page := mainWin.action2Page[action]
+	page.SetParent(mainWin.pageComposite)
+	page.SetVisible(true)
+
+	action.SetChecked(true)
+
+	mainWin.currPage = page
+	mainWin.currAction = action
+
+	return nil
 }
 
-////////////////////////////////////////////////////////////
-// BoardListModel
-////////////////////////////////////////////////////////////
-/**
- * リストボックスモデル
- */
-type BoardListModel struct {
-	// 派生元：リストモデルベース
-	walk.ListModelBase
-	// アイテム一覧
-	items []BoardListItem
-}
+func (mainWin *MainWin) updateNavigationToolBar() error {
+	mainWin.navToolBar.SetSuspended(true)
+	defer mainWin.navToolBar.SetSuspended(false)
 
-/**
- * コンストラクタ
- */
-func NewBoardListModel() *BoardListModel {
-	// Unkarの板一覧（全体）
-	var boardListAll []unkarstub.BoardItem
+	actions := mainWin.navToolBar.Actions()
 
-	// Unkarのサーバー一覧
-	// サーバー一覧を取得する
-	serverList := unkarstub.UnkarIndexMain()
+	if err := actions.Clear(); err != nil {
+		return err
+	}
 
-	for _, server := range serverList {
-		// サーバーの板一覧の取得
-		boardList := server.Board
-		for _, board := range boardList {
-			// 板を板一覧（全体）に追加
-			boardListAll = append(boardListAll, board)
+	for _, action := range mainWin.pageActions {
+		if err := actions.Add(action); err != nil {
+			return err
 		}
 	}
 
-	// リストボックスのモデルを生成
-	model := &BoardListModel{items: make([]BoardListItem, len(boardListAll))}
-	for i, board := range boardListAll {
-		// アイテム名(表示名)
-		name := board.Name
-		// アイテムの値
-		value := board.Path
-		// リストボックスモデルにリストボックスアイテムをセットする
-		model.items[i] = BoardListItem{name, value}
+	if mainWin.currAction != nil {
+		if !actions.Contains(mainWin.currAction) {
+			for _, action := range mainWin.pageActions {
+				if action != mainWin.currAction {
+					if err := mainWin.setCurrentAction(action); err != nil {
+						return err
+					}
+
+					break
+				}
+			}
+		}
 	}
 
-	return model
+	return nil
 }
 
-/**
- * アイテム数を取得する
- * @return アイテム数
- */
-func (model *BoardListModel) ItemCount() int {
-	return len(model.items)
+func (mainWin *MainWin) topPageAction() *walk.Action {
+	var tgtAction *walk.Action = nil
+	tgtPage := mainWin.topPage
+	for workAction, workPage := range mainWin.action2Page {
+		if workPage == tgtPage {
+			tgtAction = workAction
+			break
+		}
+	}
+	return tgtAction
 }
 
-/**
- * アイテムの値を取得する
- * @return アイテムの値
- */
-func (model *BoardListModel) Value(index int) interface{} {
-	return model.items[index].name
+func (mainWin *MainWin) boardPageAction() *walk.Action {
+	var tgtAction *walk.Action = nil
+	tgtPage := mainWin.boardPage
+	for workAction, workPage := range mainWin.action2Page {
+		if workPage == tgtPage {
+			tgtAction = workAction
+			break
+		}
+	}
+	return tgtAction
+}
+
+func (mainWin *MainWin) threadPageAction() *walk.Action {
+	var tgtAction *walk.Action = nil
+	tgtPage := mainWin.threadPage
+	for workAction, workPage := range mainWin.action2Page {
+		if workPage == tgtPage {
+			tgtAction = workAction
+			break
+		}
+	}
+	return tgtAction
+}
+
+func (mainWin *MainWin) NavigateToTopPage() {
+	action := mainWin.topPageAction()
+	mainWin.topPage.UpdateContents()
+	mainWin.changePage(action)
+}
+
+func (mainWin *MainWin) NavigateToBoardPage(boardName string, boardKey string, sortAttrStr string) {
+	action := mainWin.boardPageAction()
+	mainWin.boardPage.UpdateContents(boardName, boardKey, sortAttrStr)
+	mainWin.changePage(action)
+}
+
+func (mainWin *MainWin) NavigateToThreadPage(boardName string, boardKey string, threadNo int64) {
+	action := mainWin.threadPageAction()
+	mainWin.threadPage.UpdateContents(boardName, boardKey, threadNo)
+	mainWin.changePage(action)
+}
+
+func (mainWin *MainWin) changePage(action *walk.Action) {
+	mainWin.clearToolBarChecked()
+	mainWin.setCurrentAction(action)
+}
+
+func (mainWin *MainWin) clearToolBarChecked() {
+	for _, workAction := range mainWin.pageActions {
+		workAction.SetChecked(false)
+	}
+	mainWin.currAction = nil
 }

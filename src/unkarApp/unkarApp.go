@@ -1,9 +1,5 @@
 package main
 
-import (
-	"log"
-)
-
 import _ "runtime/cgo"
 
 ////////////////////////////////////////////////////////////
@@ -19,7 +15,7 @@ func main() {
 	// メインウィンドウの生成
 	mw, err = NewMainWin()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 		return
 	}
 	// 表示

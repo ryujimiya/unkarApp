@@ -30,6 +30,7 @@ type ThreadPage struct {
 	threadPageUrl      string        // 表示用htmlのURL
 	url                string        // 現在のURL
 	fileCreate         bool          // ファイルを作成する？
+	title              string        // タイトル
 }
 
 func newThreadPage(parent walk.Container, mainWin *MainWin) (*ThreadPage, error) {
@@ -73,6 +74,10 @@ func newThreadPage(parent walk.Container, mainWin *MainWin) (*ThreadPage, error)
 	return threadPage, nil
 }
 
+func (threadPage *ThreadPage) Title() string {
+	return threadPage.title
+}
+
 func (threadPage *ThreadPage) UpdateContents(boardName string, boardKey string, threadNo int64) {
 	// 板名の格納
 	threadPage.boardName = boardName
@@ -103,6 +108,7 @@ func (threadPage *ThreadPage) webView_OnNavigating(eventData *walk.WebViewNaviga
 	fmt.Printf("webView_OnNavigating\r\n")
 	fmt.Printf("Url = %+v\r\n", eventData.Url())
 	fmt.Printf("Flags = %+v\r\n", eventData.Flags())
+	fmt.Printf("PostData = %+v\r\n", eventData.PostData())
 	fmt.Printf("Headers = %+v\r\n", eventData.Headers())
 	fmt.Printf("TargetFrameName = %+v\r\n", eventData.TargetFrameName())
 	fmt.Printf("Canceled = %+v\r\n", eventData.Canceled())
@@ -193,7 +199,8 @@ func (threadPage *ThreadPage) createHtmlFile() {
 	// 表示用htmlファイルに保存
 	threadPage.saveToTmpHtml(threadPage.threadPageFilepath, htmlText)
 
-	//threadPage.mainWin.SetTitle(threadPage.threadTitle + " - " + AppName + " " + Version)
+	threadPage.title = threadPage.threadTitle
+	threadPage.mainWin.UpdateTitle(threadPage)
 }
 
 func (threadPage *ThreadPage) createHtmlText(boardKey string, threadNo int64, attr string) string {

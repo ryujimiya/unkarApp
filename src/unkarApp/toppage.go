@@ -15,6 +15,7 @@ type TopPage struct {
 	mainWin        *MainWin        // メインウィンドウ
 	listBoxBoard   *walk.ListBox   // 板一覧リストボックス
 	boardListModel *BoardListModel // 板一覧モデル
+	title          string          // タイトル
 }
 
 func newTopPage(parent walk.Container, mainWin *MainWin) (*TopPage, error) {
@@ -48,13 +49,20 @@ func newTopPage(parent walk.Container, mainWin *MainWin) (*TopPage, error) {
 	return topPage, nil
 }
 
-func (topPage *TopPage) UpdateContents(args ...string) {
+func (topPage *TopPage) Title() string {
+	return topPage.title
+}
+
+func (topPage *TopPage) UpdateContents() {
 	// モデルの生成
 	topPage.boardListModel = NewBoardListModel()
 
 	topPage.listBoxBoard.SetCurrentIndex(-1)
 	// モデルを再設定する
 	topPage.listBoxBoard.SetModel(topPage.boardListModel)
+
+	topPage.title = ""
+	topPage.mainWin.UpdateTitle(topPage)
 }
 
 /**

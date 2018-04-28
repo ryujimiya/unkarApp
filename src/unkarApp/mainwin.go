@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	AppName = "unkarApp"
-	Version = "1.0.0.4"
+	AppName   = "unkarApp"
+	Version   = "1.0.0.5"
+	TitleBase = AppName + " " + Version
 )
 
 /**
@@ -39,6 +40,7 @@ type Page interface {
 	walk.Container
 	Parent() walk.Container
 	SetParent(parent walk.Container) error
+	Title() string
 }
 
 /**
@@ -89,7 +91,7 @@ func NewMainWin() (*MainWin, error) {
 	// メインウィンドウのウィンドウ生成
 	err := MainWindow{
 		AssignTo: &mainWin.MainWindow,
-		Title:    AppName + " " + Version,
+		Title:    TitleBase,
 		Icon:     icon,
 		MinSize:  Size{950, 600},
 		Layout:   HBox{MarginsZero: true, SpacingZero: true},
@@ -164,6 +166,15 @@ func NewMainWin() (*MainWin, error) {
 	return mainWin, err
 }
 
+func (mainWin *MainWin) UpdateTitle(page Page) {
+	s := page.Title()
+	if s != "" {
+		s += " - "
+	}
+	s += TitleBase
+	mainWin.MainWindow.SetTitle(s)
+}
+
 func (mainWin *MainWin) newPageAction(title, image string) (*walk.Action, error) {
 	img, err := walk.Resources.Bitmap(image)
 	if err != nil {
@@ -207,6 +218,7 @@ func (mainWin *MainWin) setCurrentAction(action *walk.Action) error {
 
 	mainWin.currPage = page
 	mainWin.currAction = action
+	mainWin.UpdateTitle(page)
 
 	return nil
 }

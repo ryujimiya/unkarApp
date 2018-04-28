@@ -49,12 +49,15 @@ type BoardPageModel struct {
  */
 type BoardPage struct {
 	*walk.Composite
-	mainWin         *MainWin         // メインウィンドウ
-	listBoxThread   *walk.ListBox    // スレッド一覧リストボックス
-	boardKey        string           // 板キー
-	boardName       string           // 板タイトル
-	boardPageModel  *BoardPageModel  // 板モデル
-	threadListModel *ThreadListModel // スレッド一覧モデル
+	mainWin         *MainWin             // メインウィンドウ
+	db              *walk.DataBinder     // データバインダー
+	rbSort          [8]*walk.RadioButton // ソート属性ラジオボタン一覧
+	listBoxThread   *walk.ListBox        // スレッド一覧リストボックス
+	boardKey        string               // 板キー
+	boardName       string               // 板タイトル
+	boardPageModel  *BoardPageModel      // 板モデル
+	threadListModel *ThreadListModel     // スレッド一覧モデル
+	title           string               // タイトル
 }
 
 func newBoardPage(parent walk.Container, mainWin *MainWin) (*BoardPage, error) {
@@ -73,6 +76,7 @@ func newBoardPage(parent walk.Container, mainWin *MainWin) (*BoardPage, error) {
 		Name:     "板",
 		Layout:   VBox{},
 		DataBinder: DataBinder{
+			AssignTo:   &boardPage.db,
 			DataSource: boardPage.boardPageModel,
 			AutoSubmit: true,
 			OnSubmitted: func() {
@@ -93,44 +97,52 @@ func newBoardPage(parent walk.Container, mainWin *MainWin) (*BoardPage, error) {
 						DataMember: "SortAttrStr",
 						Buttons: []RadioButton{
 							RadioButton{
-								Name:  "spRB",
-								Text:  "勢い順↓",
-								Value: "sp",
+								AssignTo: &boardPage.rbSort[0],
+								Name:     "spRB",
+								Text:     "勢い順↓",
+								Value:    "sp",
 							},
 							RadioButton{
-								Name:  "sp2RB",
-								Text:  "勢い順↑",
-								Value: "sp2",
+								AssignTo: &boardPage.rbSort[1],
+								Name:     "sp2RB",
+								Text:     "勢い順↑",
+								Value:    "sp2",
 							},
 							RadioButton{
-								Name:  "siRB",
-								Text:  "時間順↓",
-								Value: "si",
+								AssignTo: &boardPage.rbSort[2],
+								Name:     "siRB",
+								Text:     "時間順↓",
+								Value:    "si",
 							},
 							RadioButton{
-								Name:  "si2RB",
-								Text:  "時間順↑",
-								Value: "si2",
+								AssignTo: &boardPage.rbSort[3],
+								Name:     "si2RB",
+								Text:     "時間順↑",
+								Value:    "si2",
 							},
 							RadioButton{
-								Name:  "reRB",
-								Text:  "レス数順↓",
-								Value: "re",
+								AssignTo: &boardPage.rbSort[4],
+								Name:     "reRB",
+								Text:     "レス数順↓",
+								Value:    "re",
 							},
 							RadioButton{
-								Name:  "re2RB",
-								Text:  "レス数順↑",
-								Value: "re2",
+								AssignTo: &boardPage.rbSort[5],
+								Name:     "re2RB",
+								Text:     "レス数順↑",
+								Value:    "re2",
 							},
 							RadioButton{
-								Name:  "defRB",
-								Text:  "番号順↑",
-								Value: "",
+								AssignTo: &boardPage.rbSort[6],
+								Name:     "defRB",
+								Text:     "番号順↑",
+								Value:    "",
 							},
 							RadioButton{
-								Name:  "noRB",
-								Text:  "番号順↓",
-								Value: "no",
+								AssignTo: &boardPage.rbSort[7],
+								Name:     "noRB",
+								Text:     "番号順↓",
+								Value:    "no",
 							},
 						},
 					},
@@ -155,13 +167,31 @@ func newBoardPage(parent walk.Container, mainWin *MainWin) (*BoardPage, error) {
 	return boardPage, nil
 }
 
+func (boardPage *BoardPage) Title() string {
+	return boardPage.title
+}
+
 func (boardPage *BoardPage) UpdateContents(boardName string, boardKey string, sortAttrStr string) {
 	boardPage.boardName = boardName
 	boardPage.boardKey = boardKey
+	prevSortAttr := boardPage.boardPageModel.SortAttrStr
 	boardPage.boardPageModel.SortAttrStr = sortAttrStr
 
+	if prevSortAttr != boardPage.boardPageModel.SortAttrStr {
+		// ラジオボタンのイベントではここにはこない
+		// 外部から呼ばれた場合、ここにくる
+		// ラジオボタンのチェック状態の更新
+		for _, rb := range boardPage.rbSort {
+			//rb.SetChecked(rb.Value() == boardPage.boardPageModel.SortAttrStr)
+			//だとrbgSort.CheckButton()が変わらないのでCheckedValueプロパティをセットする
+			prop := rb.AsWindowBase().Property("CheckedValue")
+			prop.Set(boardPage.boardPageModel.SortAttrStr)
+		}
+		return
+	}
+
 	if len(boardName) == 0 || len(boardKey) == 0 || len(sortAttrStr) == 0 {
-		fmt.Printf("BoardPage.UpdateContents parameter is nothing\r\n")
+		//fmt.Printf("BoardPage.UpdateContents parameter is nothing\r\n")
 		return
 	}
 
@@ -171,7 +201,8 @@ func (boardPage *BoardPage) UpdateContents(boardName string, boardKey string, so
 	boardPage.listBoxThread.SetCurrentIndex(-1)
 	boardPage.listBoxThread.SetModel(boardPage.threadListModel)
 
-	//boardPage.mainWin.SetTitle(boardPage.boardName + " - " + AppName + " " + Version)
+	boardPage.title = boardPage.boardName
+	boardPage.mainWin.UpdateTitle(boardPage)
 }
 
 /**

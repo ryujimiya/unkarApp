@@ -8,7 +8,7 @@ Golangで書いた5chビューアです
 unkarウェブサイトソースコードを元にGolang WALKを使ってWindowsアプリを作りました 
 
 **Latest Release**  
-version1.0.0.4  
+version1.0.0.5  
 　[ダウンロード](https://github.com/ryujimiya/unkarApp/blob/master/publish/)  
 
 **Important**  

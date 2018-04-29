@@ -49,15 +49,14 @@ type BoardPageModel struct {
  */
 type BoardPage struct {
 	*walk.Composite
-	mainWin         *MainWin             // メインウィンドウ
-	db              *walk.DataBinder     // データバインダー
-	rbSort          [8]*walk.RadioButton // ソート属性ラジオボタン一覧
-	listBoxThread   *walk.ListBox        // スレッド一覧リストボックス
-	boardKey        string               // 板キー
-	boardName       string               // 板タイトル
-	boardPageModel  *BoardPageModel      // 板モデル
-	threadListModel *ThreadListModel     // スレッド一覧モデル
-	title           string               // タイトル
+	mainWin         *MainWin         // メインウィンドウ
+	db              *walk.DataBinder // データバインダー
+	listBoxThread   *walk.ListBox    // スレッド一覧リストボックス
+	boardKey        string           // 板キー
+	boardName       string           // 板タイトル
+	boardPageModel  *BoardPageModel  // 板モデル
+	threadListModel *ThreadListModel // スレッド一覧モデル
+	title           string           // タイトル
 }
 
 func newBoardPage(parent walk.Container, mainWin *MainWin) (*BoardPage, error) {
@@ -97,52 +96,44 @@ func newBoardPage(parent walk.Container, mainWin *MainWin) (*BoardPage, error) {
 						DataMember: "SortAttrStr",
 						Buttons: []RadioButton{
 							RadioButton{
-								AssignTo: &boardPage.rbSort[0],
-								Name:     "spRB",
-								Text:     "勢い順↓",
-								Value:    "sp",
+								Name:  "spRB",
+								Text:  "勢い順↓",
+								Value: "sp",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[1],
-								Name:     "sp2RB",
-								Text:     "勢い順↑",
-								Value:    "sp2",
+								Name:  "sp2RB",
+								Text:  "勢い順↑",
+								Value: "sp2",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[2],
-								Name:     "siRB",
-								Text:     "時間順↓",
-								Value:    "si",
+								Name:  "siRB",
+								Text:  "時間順↓",
+								Value: "si",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[3],
-								Name:     "si2RB",
-								Text:     "時間順↑",
-								Value:    "si2",
+								Name:  "si2RB",
+								Text:  "時間順↑",
+								Value: "si2",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[4],
-								Name:     "reRB",
-								Text:     "レス数順↓",
-								Value:    "re",
+								Name:  "reRB",
+								Text:  "レス数順↓",
+								Value: "re",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[5],
-								Name:     "re2RB",
-								Text:     "レス数順↑",
-								Value:    "re2",
+								Name:  "re2RB",
+								Text:  "レス数順↑",
+								Value: "re2",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[6],
-								Name:     "defRB",
-								Text:     "番号順↑",
-								Value:    "",
+								Name:  "defRB",
+								Text:  "番号順↑",
+								Value: "",
 							},
 							RadioButton{
-								AssignTo: &boardPage.rbSort[7],
-								Name:     "noRB",
-								Text:     "番号順↓",
-								Value:    "no",
+								Name:  "noRB",
+								Text:  "番号順↓",
+								Value: "no",
 							},
 						},
 					},
@@ -180,18 +171,10 @@ func (boardPage *BoardPage) UpdateContents(boardName string, boardKey string, so
 	if prevSortAttr != boardPage.boardPageModel.SortAttrStr {
 		// ラジオボタンのイベントではここにはこない
 		// 外部から呼ばれた場合、ここにくる
-		// ラジオボタンのチェック状態の更新
-		for _, rb := range boardPage.rbSort {
-			//rb.SetChecked(rb.Value() == boardPage.boardPageModel.SortAttrStr)
-			//だとrbgSort.CheckButton()が変わらないのでCheckedValueプロパティをセットする
-			prop := rb.AsWindowBase().Property("CheckedValue")
-			prop.Set(boardPage.boardPageModel.SortAttrStr)
-		}
-		return
-	}
 
-	if len(boardName) == 0 || len(boardKey) == 0 || len(sortAttrStr) == 0 {
-		//fmt.Printf("BoardPage.UpdateContents parameter is nothing\r\n")
+		// データソースをUIへ適用する (Submitの反対)
+		//   (ラジオボタンのチェック状態を更新する)
+		boardPage.db.Reset()
 		return
 	}
 
@@ -275,6 +258,14 @@ type ThreadListModel struct {
  * @return スレッドリストモデル
  */
 func NewThreadListModel(boardKey string, sortAttrStr string) *ThreadListModel {
+	if boardKey == "" || sortAttrStr == "" {
+		nilmodel := &ThreadListModel{
+			items:     make([]ThreadListItem, 0),
+			boardName: "",
+		}
+		return nilmodel
+	}
+
 	// 板のモデルを取得する
 	unutilModel := unkarstub.GetBoardModel(boardKey)
 

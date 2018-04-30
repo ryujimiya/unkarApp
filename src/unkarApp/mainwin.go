@@ -13,7 +13,7 @@ import (
 
 const (
 	AppName   = "unkarApp"
-	Version   = "1.0.0.5"
+	Version   = "1.0.0.6"
 	TitleBase = AppName + " " + Version
 )
 

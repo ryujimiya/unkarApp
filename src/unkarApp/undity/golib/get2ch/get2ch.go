@@ -30,7 +30,8 @@ const (
 	DAT_CACHE_TIME_THREAD     = 20 * time.Second
 	DAT_CACHE_TIME_BOARD      = 7 * time.Second
 	SETTING_CACHE_TIME        = 24 * 7 * time.Hour
-	DAT_MAX_SIZE              = 614400
+	//DAT_MAX_SIZE              = 614400
+	DAT_MAX_SIZE              = 0x7FFFFFFF
 	DAT_NOT_REQUEST_ADD_MOD   = 24 * 365 * 5 * time.Hour // 5年間
 	DAT_NOT_REQUEST_WAIT      = 24 * time.Hour           // 1日
 	DAT_NOT_REQUEST_RES_COUNT = 1000                     // 1000レスを超えていたらリクエストしないようにする

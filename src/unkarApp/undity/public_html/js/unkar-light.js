@@ -42,9 +42,9 @@ unkarl.id = {
  */
 unkarl.regs = {
 	http		: /((?=[hst])(?:http(?:s)?|ttp(?:s)?|shttp)):\/\/([\-_.!~*'()\w;\/?:\@&=+\$,%#\|]+)/,
-	c2ch 		: /^c\.2ch\.net\/test\/\-\/(\w+)(\/\d{9,10})?/,
-	sure 		: /^(?:\w+\.(?=[2b])(?:2ch\.net|bbspink\.com))\/test\/read\.\w+[\/#](\w+\/\d{9,10})(\/[l,\-\d]+)?/,
-	ita			: /^(?:\w+\.(?=[2b])(?:2ch\.net|bbspink\.com))\/(\w+)/,
+	c2ch 		: /^c\.5ch\.net\/test\/\-\/(\w+)(\/\d{9,10})?/,
+	sure 		: /^(?:\w+\.(?=[2b])(?:5ch\.net|bbspink\.com))\/test\/read\.\w+[\/#](\w+\/\d{9,10})(\/[l,\-\d]+)?/,
+	ita			: /^(?:\w+\.(?=[2b])(?:5ch\.net|bbspink\.com))\/(\w+)/,
 	unkar		: /\/(\w+\/\d{9,10})/,
 	tag			: /<[^>]*>/g,
 	youtube		: /youtube\.(?:com|jp|co\.jp)\/watch(?:_videos)?\?.*v(?:ideo_ids)?=([\-\w]+)/,

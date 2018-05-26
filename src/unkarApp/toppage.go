@@ -3,6 +3,7 @@ package main
 import (
 	"./undity"
 	"fmt"
+	"strings"
 )
 
 import (
@@ -13,6 +14,7 @@ import (
 type TopPage struct {
 	*walk.Composite
 	mainWin        *MainWin        // メインウィンドウ
+	lineEditSearch *walk.LineEdit  // 検索ラインエディット
 	listBoxBoard   *walk.ListBox   // 板一覧リストボックス
 	boardListModel *BoardListModel // 板一覧モデル
 	title          string          // タイトル
@@ -29,6 +31,10 @@ func newTopPage(parent walk.Container, mainWin *MainWin) (*TopPage, error) {
 		Name:     "板一覧",
 		Layout:   VBox{},
 		Children: []Widget{
+			LineEdit{
+				AssignTo:      &topPage.lineEditSearch,
+				OnTextChanged: topPage.lineEditTextChanged,
+			},
 			ListBox{
 				AssignTo:              &topPage.listBoxBoard,
 				OnCurrentIndexChanged: topPage.listBoxBoardCurrentIndexChanged,
@@ -63,6 +69,20 @@ func (topPage *TopPage) UpdateContents() {
 
 	topPage.title = ""
 	topPage.mainWin.UpdateTitle(topPage)
+}
+
+/**
+ * 検索テキストエディットのテキストが変更された
+ */
+func (topPage *TopPage) lineEditTextChanged() {
+	searchText := topPage.lineEditSearch.Text()
+	//fmt.Printf("searchText:" + searchText + "\r\n");
+
+	// 検索
+	topPage.boardListModel.Search(searchText)
+	// モデルを再設定する
+	topPage.listBoxBoard.SetCurrentIndex(-1)
+	topPage.listBoxBoard.SetModel(topPage.boardListModel)
 }
 
 /**
@@ -122,6 +142,8 @@ type BoardListModel struct {
 	walk.ListModelBase
 	// アイテム一覧
 	items []BoardListItem
+	// 全アイテム一覧
+	allItems []BoardListItem
 }
 
 /**
@@ -145,17 +167,42 @@ func NewBoardListModel() *BoardListModel {
 	}
 
 	// リストボックスのモデルを生成
-	model := &BoardListModel{items: make([]BoardListItem, len(boardListAll))}
+	model := &BoardListModel{
+		allItems: make([]BoardListItem, len(boardListAll)),
+		items:    make([]BoardListItem, 0),
+	}
 	for i, board := range boardListAll {
 		// アイテム名(表示名)
 		name := board.Name
 		// アイテムの値
 		value := board.Path
 		// リストボックスモデルにリストボックスアイテムをセットする
-		model.items[i] = BoardListItem{name, value}
+		model.allItems[i] = BoardListItem{name, value}
 	}
 
+	model.Search("")
+
 	return model
+}
+
+/**
+ * 検索する
+ */
+func (model *BoardListModel) Search(searchText string) {
+	// クリア
+	model.items = make([]BoardListItem, 0)
+
+	if len(searchText) == 0 {
+		model.items = model.allItems[:]
+	} else {
+		// 検索テキストにマッチするものを追加
+		for _, item := range model.allItems {
+			name := item.name
+			if strings.Index(name, searchText) >= 0 {
+				model.items = append(model.items, item)
+			}
+		}
+	}
 }
 
 /**

@@ -40,7 +40,7 @@ func newThreadPage(parent walk.Container, mainWin *MainWin) (*ThreadPage, error)
 	threadPage.mainWin = mainWin
 
 	threadPage.url = ""
-	threadPage.isNavigating = true
+	threadPage.isNavigating = false
 
 	if err := (Composite{
 		AssignTo: &threadPage.Composite,

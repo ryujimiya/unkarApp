@@ -29,7 +29,7 @@ type ThreadPage struct {
 	threadPageFilepath string        // ファイルパス
 	threadPageUrl      string        // 表示用htmlのURL
 	url                string        // 現在のURL
-	fileCreate         bool          // ファイルを作成する？
+	isNavigating       bool          // URLが変更されようとしている？
 	title              string        // タイトル
 }
 
@@ -40,7 +40,7 @@ func newThreadPage(parent walk.Container, mainWin *MainWin) (*ThreadPage, error)
 	threadPage.mainWin = mainWin
 
 	threadPage.url = ""
-	threadPage.fileCreate = true
+	threadPage.isNavigating = true
 
 	if err := (Composite{
 		AssignTo: &threadPage.Composite,
@@ -97,10 +97,6 @@ func (threadPage *ThreadPage) UpdateContents(boardName string, boardKey string, 
 	threadPage.threadPageUrl = "file:///" + tmpDir + "/" + threadPageFilename
 	fmt.Printf("threadPage.threadPageUrl=" + threadPage.threadPageUrl + "\r\n")
 
-	// HTMLファイルを作成
-	threadPage.createHtmlFile()
-	threadPage.fileCreate = false
-
 	threadPage.webView.SetURL(threadPage.threadPageUrl)
 }
 
@@ -118,17 +114,25 @@ func (threadPage *ThreadPage) webView_OnNavigating(eventData *walk.WebViewNaviga
 	// URLを格納する
 	// このURLはfile:///C:/でなくC:\ で渡ってくるので注意
 	threadPage.url = eventData.Url()
+
+	if strings.ToLower(threadPage.url) == strings.ToLower(threadPage.threadPageFilepath) {
+		// HTMLファイルを作成
+		threadPage.createHtmlFile()
+	}
+	threadPage.isNavigating = true
 }
 
 func (threadPage *ThreadPage) webView_OnNavigated(url string) {
 	fmt.Printf("webView_OnNavigated\r\n")
 	fmt.Printf("url = %+v\r\n", url)
+
+	threadPage.isNavigating = false
 }
 
 func (threadPage *ThreadPage) webView_OnDownloading() {
 	fmt.Printf("webView_OnDownloading\r\n")
 
-	if threadPage.fileCreate {
+	if !threadPage.isNavigating {
 		//fmt.Printf("%+v\r\n", threadPage.url)
 		//fmt.Printf("%+v\r\n", threadPage.threadPageFilepath)
 		// スレッドページだったらファイルを作成する
@@ -139,16 +143,12 @@ func (threadPage *ThreadPage) webView_OnDownloading() {
 			// HTMLファイルを作成
 			threadPage.createHtmlFile()
 
-			// このイベントが発生するときはすでにダウンロードが始まっているらしい
 			// 作成したHTMLファイルが表示に反映されない
 			// 仕方ないので再度更新する
 			threadPage.webView.Refresh()
 		}
-
-		threadPage.fileCreate = false
-	} else {
-		threadPage.fileCreate = true
 	}
+	fmt.Printf("webView_OnDownloading exit\r\n")
 }
 
 func (threadPage *ThreadPage) webView_OnDownloaded() {
@@ -168,6 +168,8 @@ func (threadPage *ThreadPage) webView_OnNavigatedError(eventData *walk.WebViewNa
 	fmt.Printf("Canceled = %+v\r\n", eventData.Canceled())
 	// if you want to cancel
 	//eventData.SetCanceled(true)
+
+	threadPage.isNavigating = false
 }
 
 func (threadPage *ThreadPage) webView_OnNewWindow(eventData *walk.WebViewNewWindowEventData) {
